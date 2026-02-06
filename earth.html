@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Home - Kalaburagi</title>
+  <style>
+    /* =========================================
+           CORE STYLES
+           ========================================= */
+    body {
+      margin: 0;
+      background-color: #ffffff;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: background-color 0.5s ease;
+    }
+
+    body.dark-mode {
+      background-color: #050505;
+    }
+
+    /* Background Animation */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Three.js Container */
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      z-index: 10;
+      outline: none;
+    }
+
+    /* Loading Indicator */
+    .loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #888;
+      font-size: 14px;
+      z-index: 20;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    /* =========================================
+           LOCATION MARKERS & DATA POPUPS
+           ========================================= */
+    .location-marker {
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .marker-pin {
+      width: 24px;
+      height: 24px;
+      background: radial-gradient(circle at 30% 30%, #ff4444, #cc0000);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2px solid white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      animation: markerBounce 0.6s ease-out;
+    }
+
+    .marker-pulse {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 68, 68, 0.3);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes markerBounce {
+      0% {
+        transform: rotate(-45deg) translateY(-50px);
+        opacity: 0;
+      }
+
+      50% {
+        transform: rotate(-45deg) translateY(5px);
+      }
+
+      100% {
+        transform: rotate(-45deg) translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+      }
+    }
+
+    .data-popup {
+      position: fixed;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 250px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      z-index: 101;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.8) translateY(20px);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    body.dark-mode .data-popup {
+      background: rgba(30, 30, 30, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .data-popup.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    .data-popup h3 {
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    body.dark-mode .data-popup h3 {
+      color: #e0e0e0;
+    }
+
+    .data-popup .info-item {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 13px;
+      color: #666;
+    }
+
+    body.dark-mode .data-popup .info-item {
+      color: #aaa;
+    }
+
+    .data-popup .info-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .zoom-indicator {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      z-index: 102;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    body.dark-mode .zoom-indicator {
+      background: rgba(30, 30, 30, 0.9);
+      color: #e0e0e0;
+    }
+
+    /* =========================================
+           SIDEBAR & TOGGLE UI
+           ========================================= */
+    .hamburger-menu {
+      position: fixed;
+      top: 25px;
+      left: 25px;
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(ellipse at 30% 20%, rgba(240, 240, 240, 0.9), rgba(200, 200, 200, 0.7), rgba(170, 170, 170, 0.5));
+      border-radius: 25% 75% 30% 70% / 65% 20% 80% 35%;
+      cursor: pointer;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      padding: 10px;
+      transition: transform 0.3s ease, border-radius 0.3s ease;
+    }
+
+    .hamburger-menu:hover {
+      transform: scale(1.1) rotate(10deg);
+    }
+
+    .hamburger-menu.active {
+      transform: rotate(90deg);
+    }
+
+    .hamburger-line {
+      width: 18px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(90, 90, 90, 0.9), rgba(130, 130, 130, 0.7));
+      border-radius: 1px;
+      transition: all 0.3s ease;
+    }
+
+    body.dark-mode .hamburger-menu {
+      background: radial-gradient(ellipse at 30% 20%, rgba(80, 80, 80, 0.9), rgba(60, 60, 60, 0.7), rgba(40, 40, 40, 0.5));
+    }
+
+    body.dark-mode .hamburger-line {
+      background: linear-gradient(90deg, rgba(180, 180, 180, 0.9), rgba(150, 150, 150, 0.7));
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 300px;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(15px);
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+      z-index: 150;
+      transition: left 0.5s ease-out, background 0.5s ease-out;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    body.dark-mode .sidebar {
+      background: rgba(20, 20, 20, 0.85);
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-content {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 50px;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0);
+      z-index: 140;
+      pointer-events: none;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar-overlay.active {
+      background: rgba(0, 0, 0, 0.3);
+      pointer-events: all;
+    }
+
+    .theme-toggle-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .theme-toggle {
+      width: 60px;
+      height: 30px;
+      background: rgba(200, 200, 200, 0.3);
+      border-radius: 15px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid rgba(150, 150, 150, 0.5);
+    }
+
+    .theme-toggle:hover {
+      background: rgba(220, 220, 220, 0.4);
+    }
+
+    .theme-toggle-slider {
+      width: 22px;
+      height: 22px;
+      background: radial-gradient(circle at 30% 30%, rgba(240, 240, 240, 0.95), rgba(180, 180, 180, 0.8));
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark-mode .theme-toggle {
+      background: rgba(60, 60, 80, 0.4);
+      border-color: rgba(80, 80, 100, 0.5);
+    }
+
+    body.dark-mode .theme-toggle-slider {
+      transform: translateX(30px);
+      background: radial-gradient(circle at 30% 30%, rgba(100, 100, 120, 0.95), rgba(60, 60, 80, 0.8));
+    }
+
+    .nav-button {
+      width: 140px;
+      height: 50px;
+      background: radial-gradient(ellipse at 25% 30%, rgba(220, 220, 220, 0.9), rgba(180, 180, 180, 0.7), rgba(150, 150, 150, 0.5));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #333;
+      transition: transform 0.3s ease;
+      border-radius: 25px;
+    }
+
+    body.dark-mode .nav-button {
+      background: radial-gradient(ellipse at 25% 30%, rgba(80, 80, 80, 0.9), rgba(60, 60, 60, 0.7), rgba(40, 40, 40, 0.5));
+      color: #e0e0e0;
+    }
+
+    .nav-button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="hamburger-menu" id="hamburger-menu">
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-content">
+      <div class="theme-toggle-container">
+        <div class="theme-toggle" id="theme-toggle">
+          <div class="theme-toggle-slider"></div>
+        </div>
+      </div>
+      <button class="nav-button" onclick="window.location.href='index.html'">Home</button>
+      <button class="nav-button" onclick="window.location.href='about.html'">About</button>
+      <button class="nav-button" onclick="window.location.href='contact.html'">Contact</button>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+  <div class="loading" id="loading-indicator">Loading Earth...</div>
+
+  <div class="location-marker" id="marker-kalaburagi">
+    <div class="marker-pulse"></div>
+    <div class="marker-pin"></div>
+  </div>
+
+  <div class="data-popup" id="popup-kalaburagi">
+    <h3>📍 Kalaburagi</h3>
+    <div class="info-item">
+      <span class="info-icon">🏫</span>
+      <span>School: Sharana Basaveshwara Residential Public School</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🎓</span>
+      <span>College: Sharana Basaveshwara Residential Public School</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">📅</span>
+      <span>Year: 1998 - 2016</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">👶</span>
+      <span>Age: 0 - 18</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🌍</span>
+      <span>Karnataka, India</span>
+    </div>
+  </div>
+
+  <div class="location-marker" id="marker-bengaluru">
+    <div class="marker-pulse"></div>
+    <div class="marker-pin"></div>
+  </div>
+
+  <div class="data-popup" id="popup-bengaluru">
+    <h3>📍 Bengaluru</h3>
+    <div class="info-item">
+      <span class="info-icon">🏛️</span>
+      <span>University: Dayananda Sagar College of Engineering</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🎓</span>
+      <span>Degree: Bachelor of Engineering in Electronics and Communication</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">📅</span>
+      <span>Year: 2016 - 2020</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">👤</span>
+      <span>Age: 18 - 23</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🌍</span>
+      <span>Karnataka, India</span>
+    </div>
+
+  </div>
+
+  <div class="location-marker" id="marker-arlington">
+    <div class="marker-pulse"></div>
+    <div class="marker-pin"></div>
+  </div>
+
+  <div class="data-popup" id="popup-arlington">
+    <h3>📍 Arlington, Texas</h3>
+    <div class="info-item">
+      <span class="info-icon">🏛️</span>
+      <span>University: University of Texas at Arlington</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🎓</span>
+      <span>Degree: Master's in Computer Science</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">📅</span>
+      <span>Year: 2020 - Present</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">👤</span>
+      <span>Age: 24+ </span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">🌎</span>
+      <span>Texas, USA</span>
+    </div>
+  </div>
+
+  <div class="zoom-indicator" id="zoom-indicator">Zoom Level: <span id="zoom-level">100%</span></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    // ============================================
+    // 1. UI INTERACTIONS
+    // ============================================
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    hamburgerMenu.addEventListener('click', () => {
+      hamburgerMenu.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      sidebarOverlay.classList.toggle('active');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+      hamburgerMenu.classList.remove('active');
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    });
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (earthMaterial) {
+        earthMaterial.uniforms.nightMode.value = document.body.classList.contains('dark-mode') ? 1.0 : 0.0;
+      }
+    });
+
+    // ============================================
+    // 2. BACKGROUND PARTICLES
+    // ============================================
+    const particleCanvas = document.getElementById('particle-canvas');
+    const particleCtx = particleCanvas.getContext('2d');
+    particleCanvas.width = window.innerWidth;
+    particleCanvas.height = window.innerHeight;
+
+    const particles = [];
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * particleCanvas.width,
+        y: Math.random() * particleCanvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        radius: Math.random() * 1.5 + 0.5
+      });
+    }
+
+    function animateParticles() {
+      particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+      particleCtx.fillStyle = document.body.classList.contains('dark-mode') ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.15)';
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > particleCanvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > particleCanvas.height) p.vy *= -1;
+        particleCtx.beginPath();
+        particleCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        particleCtx.fill();
+      });
+
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    window.addEventListener('resize', () => {
+      particleCanvas.width = window.innerWidth;
+      particleCanvas.height = window.innerHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ============================================
+    // 3. THREE.JS EARTH SCENE
+    // ============================================
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    sunLight.position.set(5, 3, 5);
+    scene.add(sunLight);
+
+    const INTRO_Z = 15;
+    const TARGET_Z = 3.5;
+    camera.position.z = INTRO_Z;
+    let isIntroAnimation = true;
+
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = 'anonymous';
+
+    const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
+    function loadSecureTexture(url) {
+      const t = loader.load(url);
+      t.anisotropy = maxAnisotropy;
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.magFilter = THREE.LinearFilter;
+      return t;
+    }
+
+    const dayTexture = loadSecureTexture('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/8192px-Equirectangular_projection_SW.jpg');
+    const nightTexture = loadSecureTexture('https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/The_earth_at_night.jpg/8192px-The_earth_at_night.jpg');
+    const normalTexture = loadSecureTexture('https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Earth_Normal_Map_8k.png/8192px-Earth_Normal_Map_8k.png');
+    const cloudsTexture = loadSecureTexture('https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Fair_Weather_Cloud_Map.jpg/8192px-Fair_Weather_Cloud_Map.jpg');
+    const specularTexture = loadSecureTexture('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Earth_specular_mask_8k.png/8192px-Earth_specular_mask_8k.png');
+    let earthMaterial;
+
+
+    const vertexShader = `
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+    void main() {
+        vUv = uv;
+        vNormal = normalize(normalMatrix * normal);
+        vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+`;
+
+    const fragmentShader = `
+    uniform sampler2D dayTexture;
+    uniform sampler2D nightTexture;
+    uniform sampler2D specularTexture;
+    uniform sampler2D normalTexture;
+    uniform vec3 sunDirection;
+    uniform float nightMode;
+    uniform float lightsIntensity;
+    
+    varying vec2 vUv;
+    varying vec3 vNormal;
+    varying vec3 vPosition;
+
+    void main() {
+        vec3 dayColor = texture2D(dayTexture, vUv).rgb;
+        vec3 nightColor = texture2D(nightTexture, vUv).rgb;
+        float specular = texture2D(specularTexture, vUv).r;
+        vec3 normalMap = texture2D(normalTexture, vUv).rgb;
+        float bump = normalMap.g;
+        vec3 crispDay = dayColor * (0.6 + 0.8 * bump); 
+        vec3 normal = normalize(vNormal);
+        float intensity = max(dot(normal, normalize(sunDirection)), 0.0);
+        float mixValue = smoothstep(-0.15, 0.15, intensity);
+        vec3 color = mix(nightColor * lightsIntensity, crispDay, mixValue);
+        if (mixValue > 0.1 && specular > 0.05) {
+            vec3 viewDir = normalize(-vPosition);
+            vec3 reflectDir = reflect(-normalize(sunDirection), normal);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+            color += vec3(spec * 0.6 * specular);
+        }
+        if (nightMode > 0.5) { 
+            vec3 sharpNight = pow(nightColor, vec3(1.2)); 
+            color = sharpNight * lightsIntensity; 
+        }
+        gl_FragColor = vec4(color, 1.0);
+    }
+`;
+
+    const earthGeometry = new THREE.SphereGeometry(1, 256, 256);
+    earthMaterial = new THREE.ShaderMaterial({
+      vertexShader: vertexShader,
+      fragmentShader: fragmentShader,
+      uniforms: {
+        dayTexture: { value: dayTexture },
+        nightTexture: { value: nightTexture },
+        specularTexture: { value: specularTexture },
+        normalTexture: { value: normalTexture },
+        sunDirection: { value: new THREE.Vector3(5, 3, 5).normalize() },
+        nightMode: { value: document.body.classList.contains('dark-mode') ? 1.0 : 0.0 },
+        lightsIntensity: { value: 2.0 },
+      }
+    });
+    const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+    scene.add(earth);
+
+    const cloudsGeometry = new THREE.SphereGeometry(1.02, 128, 128);
+    const cloudsMaterial = new THREE.MeshPhongMaterial({
+      map: cloudsTexture,
+      transparent: true,
+      opacity: 0.4,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+    scene.add(clouds);
+
+    const atmosphereGeometry = new THREE.SphereGeometry(1.15, 64, 64);
+    const atmosphereMaterial = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec3 vNormal;
+        void main() {
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        void main() {
+            float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
+            gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity;
+        }
+    `,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      transparent: true
+    });
+    const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+    scene.add(atmosphere);
+
+    // ============================================
+    // 4. MODELS (TRAIN & PLANE)
+    // ============================================
+
+    function latLonToVector3(lat, lon, radius) {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      const x = -radius * Math.sin(phi) * Math.cos(theta);
+      const y = radius * Math.cos(phi);
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      return new THREE.Vector3(x, y, z);
+    }
+
+    function create3DTrain() {
+      const trainGroup = new THREE.Group();
+      const scale = 0.4;
+      const redMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, shininess: 50 });
+      const yellowMat = new THREE.MeshPhongMaterial({ color: 0xFFD700, shininess: 80 });
+      const couplerMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+      const wheelMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+      const chimneyMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
+      const standardGap = 0.005 * scale;
+      const shortGap = 0.002 * scale;
+
+      const boilerLength = 0.03 * scale;
+      const boilerZ = 0.02 * scale;
+      const boilerGeo = new THREE.CylinderGeometry(0.008 * scale, 0.008 * scale, boilerLength, 16);
+      const boiler = new THREE.Mesh(boilerGeo, yellowMat);
+      boiler.rotation.x = Math.PI / 2;
+      boiler.position.set(0, 0.01 * scale, boilerZ);
+      trainGroup.add(boiler);
+
+      const chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.004 * scale, 0.003 * scale, 0.01 * scale, 8), chimneyMat);
+      chimney.position.set(0, 0.022 * scale, boilerZ + 0.008 * scale);
+      trainGroup.add(chimney);
+
+      const lightMesh = new THREE.Mesh(new THREE.SphereGeometry(0.003 * scale, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      lightMesh.position.set(0, 0.01 * scale, boilerZ + 0.016 * scale);
+      trainGroup.add(lightMesh);
+
+      const wheelGeo = new THREE.CylinderGeometry(0.006 * scale, 0.006 * scale, 0.002 * scale, 16);
+      wheelGeo.rotateZ(Math.PI / 2);
+      const w1 = new THREE.Mesh(wheelGeo, wheelMat); w1.position.set(0.008 * scale, 0.006 * scale, boilerZ); trainGroup.add(w1);
+      const w2 = new THREE.Mesh(wheelGeo, wheelMat); w2.position.set(-0.008 * scale, 0.006 * scale, boilerZ); trainGroup.add(w2);
+
+      const coupler1Z = boilerZ - (boilerLength / 2) - (shortGap / 2);
+      const coupler1 = new THREE.Mesh(new THREE.CylinderGeometry(0.0025 * scale, 0.0025 * scale, shortGap, 8), couplerMat);
+      coupler1.rotation.x = Math.PI / 2;
+      coupler1.position.set(0, 0.01 * scale, coupler1Z);
+      trainGroup.add(coupler1);
+
+      const cabinLength = 0.015 * scale;
+      const cabinZ = coupler1Z - (shortGap / 2) - (cabinLength / 2);
+      const engCabin = new THREE.Mesh(new THREE.BoxGeometry(0.018 * scale, 0.025 * scale, cabinLength), redMat);
+      engCabin.position.set(0, 0.015 * scale, cabinZ);
+      trainGroup.add(engCabin);
+
+      const w3 = new THREE.Mesh(wheelGeo, wheelMat); w3.position.set(0.008 * scale, 0.006 * scale, cabinZ); trainGroup.add(w3);
+      const w4 = new THREE.Mesh(wheelGeo, wheelMat); w4.position.set(-0.008 * scale, 0.006 * scale, cabinZ); trainGroup.add(w4);
+
+      const numberOfBogies = 3;
+      const bogieLength = 0.035 * scale;
+      let currentZ = cabinZ - (cabinLength / 2);
+
+      for (let i = 0; i < numberOfBogies; i++) {
+        const coupler = new THREE.Mesh(new THREE.CylinderGeometry(0.002 * scale, 0.002 * scale, standardGap, 8), couplerMat);
+        coupler.rotation.x = Math.PI / 2;
+        coupler.position.set(0, 0.01 * scale, currentZ - standardGap / 2);
+        trainGroup.add(coupler);
+
+        const bogieZ = currentZ - standardGap - (bogieLength / 2);
+        const bogie = new THREE.Mesh(new THREE.BoxGeometry(0.018 * scale, 0.022 * scale, bogieLength), redMat);
+        bogie.position.set(0, 0.015 * scale, bogieZ);
+        trainGroup.add(bogie);
+
+        const wheelOffset = bogieLength * 0.35;
+        const positions = [[0.008, 0.006, bogieZ + wheelOffset], [-0.008, 0.006, bogieZ + wheelOffset], [0.008, 0.006, bogieZ - wheelOffset], [-0.008, 0.006, bogieZ - wheelOffset]];
+        positions.forEach(pos => {
+          const w = new THREE.Mesh(wheelGeo, wheelMat);
+          w.position.set(pos[0] * scale, pos[1] * scale, pos[2] * scale);
+          trainGroup.add(w);
+        });
+        currentZ = currentZ - standardGap - bogieLength;
+      }
+      return trainGroup;
+    }
+
+    function create3DPlane() {
+      const planeGroup = new THREE.Group();
+      const scale = 0.4;
+
+      const bodyMat = new THREE.MeshPhongMaterial({ color: 0xeeeeee, shininess: 100 });
+      const wingMat = new THREE.MeshPhongMaterial({ color: 0xdddddd, shininess: 80 });
+      const accentMat = new THREE.MeshPhongMaterial({ color: 0xff4444 });
+
+      const bodyGeo = new THREE.CylinderGeometry(0.008 * scale, 0.005 * scale, 0.06 * scale, 16);
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.rotation.x = Math.PI / 2;
+      planeGroup.add(body);
+
+      const noseGeo = new THREE.SphereGeometry(0.008 * scale, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+      const nose = new THREE.Mesh(noseGeo, bodyMat);
+      nose.position.set(0, 0, 0.03 * scale);
+      nose.rotation.x = Math.PI / 2;
+      planeGroup.add(nose);
+
+      const wingGeo = new THREE.BoxGeometry(0.07 * scale, 0.002 * scale, 0.015 * scale);
+      const wings = new THREE.Mesh(wingGeo, wingMat);
+      wings.position.set(0, 0, 0.005 * scale);
+      planeGroup.add(wings);
+
+      const tailFinGeo = new THREE.BoxGeometry(0.002 * scale, 0.015 * scale, 0.012 * scale);
+      const tailFin = new THREE.Mesh(tailFinGeo, accentMat);
+      tailFin.position.set(0, 0.008 * scale, -0.025 * scale);
+      planeGroup.add(tailFin);
+
+      const rearWingGeo = new THREE.BoxGeometry(0.025 * scale, 0.002 * scale, 0.008 * scale);
+      const rearWings = new THREE.Mesh(rearWingGeo, wingMat);
+      rearWings.position.set(0, 0, -0.025 * scale);
+      planeGroup.add(rearWings);
+
+      return planeGroup;
+    }
+
+    const trainMesh = create3DTrain();
+    const planeMesh = create3DPlane();
+    trainMesh.visible = false;
+    planeMesh.visible = false;
+    earth.add(trainMesh);
+    earth.add(planeMesh);
+
+    const kalaburagiLat = 17.3297, kalaburagiLon = 76.8343;
+    const bengaluruLat = 12.9716, bengaluruLon = 77.5946;
+    const arlingtonLat = 32.7357, arlingtonLon = -97.1081;
+
+    const TRAIN_ALTITUDE = 1.025;
+    const startVec = latLonToVector3(kalaburagiLat, kalaburagiLon, TRAIN_ALTITUDE);
+    const midVec = latLonToVector3(bengaluruLat, bengaluruLon, TRAIN_ALTITUDE);
+    const endVec = latLonToVector3(arlingtonLat, arlingtonLon, TRAIN_ALTITUDE);
+
+    let trainProgress = 0;
+    let isTrainMoving = false;
+    let isTrainPausedAtStop = false;
+    let journeyLeg = 1;
+    let trainSpeed = 0.0025;
+    let trainAnimationTriggered = false;
+
+    function updateTrainPosition() {
+      if (!isTrainMoving || isTrainPausedAtStop) return;
+
+      // Handle model visibility switch
+      if (journeyLeg === 1) {
+        trainMesh.visible = true;
+        planeMesh.visible = false;
+      } else {
+        trainMesh.visible = false;
+        planeMesh.visible = true;
+      }
+
+      trainProgress += (journeyLeg === 1 ? trainSpeed : trainSpeed * 0.4);
+
+      let origin = (journeyLeg === 1) ? startVec : midVec;
+      let destination = (journeyLeg === 1) ? midVec : endVec;
+
+      if (trainProgress >= 1) {
+        trainProgress = 1;
+        if (journeyLeg === 1) {
+          isTrainPausedAtStop = true;
+          updateMarkerPosition(bengaluruLat, bengaluruLon, markerBengaluru, popupBengaluru);
+          markerBengaluru.style.opacity = '1';
+          popupBengaluru.classList.add('visible');
+        } else {
+          isTrainMoving = false;
+          setTimeout(() => {
+            trainMesh.visible = false;
+            planeMesh.visible = false;
+          }, 800);
+
+          updateMarkerPosition(arlingtonLat, arlingtonLon, markerArlington, popupArlington);
+          markerArlington.style.opacity = '1';
+          popupArlington.classList.add('visible');
+        }
+      }
+
+      // Set altitude: grounded for train, arched for plane
+      const currentAltitude = (journeyLeg === 1)
+        ? TRAIN_ALTITUDE
+        : TRAIN_ALTITUDE + (Math.sin(trainProgress * Math.PI) * 0.15);
+
+      const currentPos = new THREE.Vector3().copy(origin).lerp(destination, trainProgress).normalize().multiplyScalar(currentAltitude);
+
+      const activeVehicle = (journeyLeg === 1) ? trainMesh : planeMesh;
+      activeVehicle.position.copy(currentPos);
+
+      if (journeyLeg === 2) {
+        targetingMode = false;
+        autoRotate = false;
+        const worldPos = new THREE.Vector3();
+        activeVehicle.getWorldPosition(worldPos);
+        const camOffset = worldPos.clone().normalize().multiplyScalar(2.2);
+        camera.position.lerp(camOffset, 0.05);
+        camera.lookAt(worldPos);
+      }
+
+      const nextPos = new THREE.Vector3().copy(origin).lerp(destination, trainProgress + 0.01).normalize().multiplyScalar(currentAltitude);
+      const upVec = currentPos.clone().normalize();
+      const matrix = new THREE.Matrix4();
+      matrix.lookAt(nextPos, currentPos, upVec);
+      activeVehicle.quaternion.setFromRotationMatrix(matrix);
+    }
+
+    // ============================================
+    // 5. CONTROLS & LOGIC
+    // ============================================
+    let autoRotate = true;
+    let rotationSpeed = 0.0005;
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+    let rotationVelocity = { x: 0, y: 0 };
+    let targetingMode = false;
+
+    const targetRotY = -kalaburagiLon * (Math.PI / 180) - (Math.PI / 2);
+    const targetRotX = kalaburagiLat * (Math.PI / 180);
+
+    const marker = document.getElementById('marker-kalaburagi');
+    const popup = document.getElementById('popup-kalaburagi');
+    const markerBengaluru = document.getElementById('marker-bengaluru');
+    const popupBengaluru = document.getElementById('popup-bengaluru');
+    const markerArlington = document.getElementById('marker-arlington');
+    const popupArlington = document.getElementById('popup-arlington');
+    const zoomIndicator = document.getElementById('zoom-indicator');
+    const zoomLevelSpan = document.getElementById('zoom-level');
+
+    const canvas = renderer.domElement;
+
+    canvas.addEventListener('mousedown', () => { if (!isIntroAnimation) { isDragging = true; autoRotate = false; targetingMode = false; } });
+    canvas.addEventListener('mouseup', () => { isDragging = false; });
+    canvas.addEventListener('mousemove', (e) => {
+      if (isDragging && !isIntroAnimation) {
+        const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
+        rotationVelocity = { x: deltaMove.x * 0.005, y: deltaMove.y * 0.005 };
+        earth.rotation.y += rotationVelocity.x;
+        earth.rotation.x += rotationVelocity.y;
+        clouds.rotation.y = earth.rotation.y;
+        clouds.rotation.x = earth.rotation.x;
+      }
+      previousMousePosition = { x: e.offsetX, y: e.offsetY };
+    });
+
+    function updateMarkerPosition(lat, lon, markerElem, popupElem) {
+      if (!markerElem) return;
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      const vector = new THREE.Vector3(-Math.sin(phi) * Math.cos(theta), Math.cos(phi), Math.sin(phi) * Math.sin(theta));
+      vector.applyMatrix4(earth.matrixWorld);
+      vector.project(camera);
+
+      const screenX = (vector.x * 0.5 + 0.5) * window.innerWidth;
+      const screenY = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+
+      if (vector.z > 1) {
+        markerElem.style.opacity = 0;
+        if (popupElem) popupElem.classList.remove('visible');
+        return;
+      }
+
+      markerElem.style.left = screenX + 'px';
+      markerElem.style.top = screenY + 'px';
+      if (popupElem) {
+        popupElem.style.left = (screenX + 30) + 'px';
+        popupElem.style.top = (screenY - 80) + 'px';
+      }
+    }
+
+    function triggerTrainSequence() {
+      if (isTrainMoving || trainAnimationTriggered) return;
+      trainAnimationTriggered = true;
+      if (popup) popup.classList.remove('visible');
+      if (marker) marker.style.opacity = '0';
+      trainMesh.visible = true;
+      trainMesh.position.copy(startVec);
+      isTrainMoving = true;
+      trainProgress = 0;
+      journeyLeg = 1;
+    }
+
+    function triggerNextLeg() {
+      if (isTrainPausedAtStop && journeyLeg === 1) {
+        popupBengaluru.classList.remove('visible');
+        markerBengaluru.style.opacity = '0';
+        isTrainPausedAtStop = false;
+        journeyLeg = 2;
+        trainProgress = 0;
+      }
+    }
+
+    function updateZoomUI() {
+      const zoomDistance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0));
+      const zoomPercent = Math.max(0, Math.min(100, ((6 - zoomDistance) / 4.15) * 100));
+      zoomLevelSpan.textContent = Math.round(zoomPercent) + '%';
+      zoomIndicator.style.opacity = zoomPercent > 5 ? '1' : '0';
+
+      if (zoomPercent >= 90 && !trainAnimationTriggered) {
+        triggerTrainSequence();
+      }
+
+      if (zoomPercent >= 96 && isTrainPausedAtStop) {
+        triggerNextLeg();
+      }
+
+      if (!trainAnimationTriggered) {
+        if (zoomPercent > 40) {
+          updateMarkerPosition(kalaburagiLat, kalaburagiLon, marker, popup);
+          marker.style.opacity = '1';
+          popup.classList.add('visible');
+        } else {
+          marker.style.opacity = '0';
+          popup.classList.remove('visible');
+        }
+      }
+
+      if (isTrainPausedAtStop && journeyLeg === 1) {
+        updateMarkerPosition(bengaluruLat, bengaluruLon, markerBengaluru, popupBengaluru);
+      }
+
+      if (journeyLeg === 2 || (trainAnimationTriggered && trainProgress >= 1 && journeyLeg === 2)) {
+        updateMarkerPosition(arlingtonLat, arlingtonLon, markerArlington, popupArlington);
+      }
+    }
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (isIntroAnimation) return;
+      if (isTrainMoving && journeyLeg === 2) return;
+
+      if (e.deltaY < 0) {
+        targetingMode = true;
+        autoRotate = false;
+      }
+
+      camera.position.z += e.deltaY * 0.002;
+      if (camera.position.z < 1.85) camera.position.z = 1.85;
+      if (camera.position.z > 10) camera.position.z = 10;
+
+      updateZoomUI();
+    }, { passive: false });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      updateTrainPosition();
+
+      if (isIntroAnimation) {
+        camera.position.z = THREE.MathUtils.lerp(camera.position.z, TARGET_Z, 0.03);
+        earth.rotation.y += 0.03;
+        if (Math.abs(camera.position.z - TARGET_Z) < 0.05) {
+          camera.position.z = TARGET_Z;
+          isIntroAnimation = false;
+          document.getElementById('loading-indicator').style.opacity = '0';
+        }
+      } else if (!isTrainMoving || (journeyLeg === 1)) {
+        if (targetingMode) {
+          earth.rotation.x = THREE.MathUtils.lerp(earth.rotation.x, targetRotX, 0.08);
+          earth.rotation.y = THREE.MathUtils.lerp(earth.rotation.y, targetRotY, 0.08);
+        } else if (autoRotate) {
+          earth.rotation.y += rotationSpeed;
+        } else if (!isDragging && (Math.abs(rotationVelocity.x) > 0.0001 || Math.abs(rotationVelocity.y) > 0.0001)) {
+          earth.rotation.y += rotationVelocity.x;
+          earth.rotation.x += rotationVelocity.y;
+          rotationVelocity.x *= 0.95;
+          rotationVelocity.y *= 0.95;
+        }
+        clouds.rotation.y = earth.rotation.y;
+        clouds.rotation.x = earth.rotation.x;
+      }
+      updateZoomUI();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+
+</html>

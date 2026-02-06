@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automate Every Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* =========================================
+           ANIMATIONS
+           ========================================= */
+        @keyframes blackToWhite {
+            0% {
+                background-color: #000000;
+            }
+
+            50% {
+                background-color: #ffffff;
+            }
+
+            100% {
+                background-color: #ffffff;
+            }
+        }
+
+        @keyframes textTransition {
+            0% {
+                opacity: 0;
+                color: #ffffff;
+            }
+
+            25% {
+                opacity: 0;
+                color: #888888;
+            }
+
+            50% {
+                opacity: 1;
+                color: #000000;
+            }
+
+            75% {
+                opacity: 1;
+                color: #ffffff;
+            }
+
+            100% {
+                opacity: 0;
+                color: #ffffff;
+            }
+        }
+
+        @keyframes flyToCorner {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            20% {
+                transform: translate(300px, -200px) scale(1.2) rotate(15deg);
+            }
+
+            40% {
+                transform: translate(-200px, 150px) scale(0.9) rotate(-10deg);
+            }
+
+            60% {
+                transform: translate(400px, 100px) scale(1.1) rotate(20deg);
+            }
+
+            80% {
+                transform: translate(-100px, -100px) scale(0.95) rotate(-5deg);
+            }
+
+            100% {
+                transform: translate(calc(-50vw + 100px), calc(50vh - 50px)) scale(0.5) rotate(0deg);
+            }
+        }
+
+        @keyframes blinkDots {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        body {
+            height: 100vh;
+            background-color: #000000;
+            animation: blackToWhite 6s ease-in-out forwards;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* =========================================
+           INTRO SPACE (STAGE 3)
+           ========================================= */
+        #intro-space {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .intro-content {
+            position: relative;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .intro-title {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            background: linear-gradient(120deg, #333 0%, #fff 20%, #333 40%, #fff 60%, #333 80%, #fff 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            transition: background-position 0.1s linear;
+        }
+
+        /* =========================================
+           ALIEN & BUBBLE (STAGE 5+)
+           ========================================= */
+        .alien-character {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            margin-top: -75px;
+            margin-left: -75px;
+            z-index: 3000;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+            will-change: transform;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .alien-character.visible {
+            opacity: 1;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background: white;
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 280px;
+            text-align: center;
+            margin-bottom: 15px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            z-index: 3001;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -10px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* =========================================
+           PROJECT IMAGES
+           ========================================= */
+        .project-image {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            max-width: 65vw;
+            max-height: 65vh;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 2500;
+            cursor: pointer;
+            background-color: #000;
+        }
+
+        .project-image.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* =========================================
+           STANDARD UI STYLES
+           ========================================= */
+        .branding {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            opacity: 0;
+            animation: textTransition 6s ease-in-out forwards;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 10;
+        }
+
+        .typing-container {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #000000;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 20px;
+            opacity: 0;
+            animation: fadeInTyping 0.5s ease-in 6s forwards;
+            letter-spacing: -0.02em;
+            z-index: 10;
+        }
+
+        @keyframes fadeInTyping {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .typed-text {
+            display: inline;
+        }
+
+        .fade-text {
+            color: #000000;
+        }
+
+        .keep-text {
+            color: #000000;
+        }
+
+        .flying-name {
+            display: inline-block;
+            animation: flyToCorner 3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            z-index: 100;
+        }
+
+        .navbar.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .navbar.sidebar-open {
+            left: 300px;
+            right: 0;
+            transform: translateY(0);
+        }
+
+        .nav-home {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000000;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-home:hover {
+            color: #666;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-link {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #000;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .typing-container.with-navbar {
+            margin-bottom: 100px;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        #particle-canvas.active {
+            opacity: 1;
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(ellipse at 30% 20%, rgba(240, 240, 240, 0.9), rgba(200, 200, 200, 0.7), rgba(170, 170, 170, 0.5));
+            border-radius: 25% 75% 30% 70% / 65% 20% 80% 35%;
+            cursor: pointer;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            padding: 10px;
+            transition: transform 0.3s ease, border-radius 0.3s ease;
+            opacity: 0;
+            animation: fadeInHamburger 0.5s ease-in 6.5s forwards;
+            clip-path: polygon(15% 0%, 25% 5%, 40% 2%, 55% 8%, 70% 3%, 85% 10%, 95% 20%, 100% 35%, 98% 50%, 100% 65%, 95% 78%, 88% 88%, 75% 95%, 60% 98%, 45% 100%, 30% 97%, 18% 92%, 8% 85%, 3% 70%, 0% 55%, 2% 40%, 5% 25%, 10% 12%);
+        }
+
+        @keyframes fadeInHamburger {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .hamburger-menu:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .hamburger-menu.active {
+            transform: rotate(90deg);
+            clip-path: polygon(18% 5%, 28% 2%, 42% 7%, 56% 4%, 68% 10%, 82% 8%, 92% 18%, 97% 32%, 99% 48%, 95% 62%, 90% 76%, 82% 87%, 70% 93%, 55% 97%, 40% 98%, 25% 93%, 12% 85%, 5% 72%, 1% 58%, 2% 42%, 5% 28%, 10% 15%, 15% 5%);
+        }
+
+        .hamburger-line {
+            width: 18px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(90, 90, 90, 0.9), rgba(130, 130, 130, 0.7));
+            border-radius: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu:hover .hamburger-line {
+            background: linear-gradient(90deg, rgba(70, 70, 70, 1), rgba(110, 110, 110, 0.8));
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            z-index: 150;
+            transition: left 0.5s ease-out, background 0.5s ease-out;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar.stars-active {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .skip-button {
+            width: 120px;
+            height: 50px;
+            background: radial-gradient(ellipse at 25% 30%, rgba(220, 220, 220, 0.9), rgba(180, 180, 180, 0.7), rgba(150, 150, 150, 0.5));
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            transition: transform 0.3s ease, clip-path 0.3s ease;
+            clip-path: polygon(8% 15%, 18% 8%, 25% 2%, 38% 12%, 45% 5%, 58% 10%, 68% 3%, 78% 15%, 88% 8%, 95% 20%, 98% 35%, 95% 48%, 100% 62%, 92% 75%, 88% 85%, 78% 92%, 68% 88%, 58% 95%, 45% 90%, 35% 98%, 25% 92%, 15% 88%, 8% 78%, 3% 65%, 0% 50%, 5% 35%, 2% 22%);
+        }
+
+        .skip-button:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .skip-button:active {
+            transform: scale(0.95);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 140;
+            pointer-events: none;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            background: rgba(0, 0, 0, 0.3);
+            pointer-events: all;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 2.5rem;
+            background-color: #000000;
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+            vertical-align: text-bottom;
+        }
+
+        .thinking-indicator {
+            display: none;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #000000;
+            margin-right: 15px;
+            letter-spacing: -0.02em;
+        }
+
+        .thinking-indicator.active {
+            display: inline;
+        }
+
+        .thinking-dots {
+            animation: blinkDots 1s ease-in-out infinite;
+        }
+
+        /* =========================================
+           DARK MODE TOGGLE
+           ========================================= */
+        .theme-toggle-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle {
+            width: 60px;
+            height: 30px;
+            background: rgba(200, 200, 200, 0.3);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border: 2px solid rgba(150, 150, 150, 0.5);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(220, 220, 220, 0.4);
+        }
+
+        .theme-toggle-slider {
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle at 30% 30%, rgba(240, 240, 240, 0.95), rgba(180, 180, 180, 0.8));
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-toggle.dark .theme-toggle-slider {
+            transform: translateX(30px);
+            background: radial-gradient(circle at 30% 30%, rgba(100, 100, 120, 0.95), rgba(60, 60, 80, 0.8));
+        }
+
+        .theme-toggle.dark {
+            background: rgba(60, 60, 80, 0.4);
+            border-color: rgba(80, 80, 100, 0.5);
+        }
+
+        /* =========================================
+           DARK MODE STYLES
+           ========================================= */
+        body.dark-mode {
+            background-color: #1a1a1a;
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(30, 30, 30, 0.95);
+            border-top: 1px solid #333;
+        }
+
+        body.dark-mode .nav-home {
+            color: #ffffff;
+        }
+
+        body.dark-mode .nav-home:hover {
+            color: #aaa;
+        }
+
+        body.dark-mode .nav-link {
+            color: #ccc;
+        }
+
+        body.dark-mode .nav-link:hover {
+            color: #fff;
+        }
+
+        body.dark-mode .nav-link::after {
+            background-color: #fff;
+        }
+
+        body.dark-mode .sidebar {
+            background: rgba(20, 20, 20, 0.95);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .sidebar.stars-active {
+            background: rgba(20, 20, 20, 0.85);
+        }
+
+        body.dark-mode .skip-button {
+            background: radial-gradient(ellipse at 25% 30%, rgba(80, 80, 80, 0.9), rgba(60, 60, 60, 0.7), rgba(40, 40, 40, 0.5));
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .hamburger-menu {
+            background: radial-gradient(ellipse at 30% 20%, rgba(80, 80, 80, 0.9), rgba(60, 60, 60, 0.7), rgba(40, 40, 40, 0.5));
+        }
+
+        body.dark-mode .hamburger-line {
+            background: linear-gradient(90deg, rgba(180, 180, 180, 0.9), rgba(150, 150, 150, 0.7));
+        }
+
+        body.dark-mode .hamburger-menu:hover .hamburger-line {
+            background: linear-gradient(90deg, rgba(200, 200, 200, 1), rgba(170, 170, 170, 0.8));
+        }
+
+        body.dark-mode .typing-container {
+            color: #ffffff;
+        }
+
+        body.dark-mode .typed-text {
+            color: #ffffff;
+        }
+
+        body.dark-mode .fade-text {
+            color: #ffffff;
+        }
+
+        body.dark-mode .keep-text {
+            color: #ffffff;
+        }
+
+        body.dark-mode .cursor {
+            background-color: #ffffff;
+        }
+
+        body.dark-mode .thinking-indicator {
+            color: #ffffff;
+        }
+
+        body.dark-mode .intro-title {
+            background: linear-gradient(120deg, #ccc 0%, #333 20%, #ccc 40%, #333 60%, #ccc 80%, #333 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        body.dark-mode .speech-bubble {
+            background: #2a2a2a;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+        }
+
+        body.dark-mode .speech-bubble::after {
+            border-color: #2a2a2a transparent transparent transparent;
+        }
+
+        /* Dark mode animation overrides */
+        body.dark-mode {
+            animation: none !important;
+        }
+
+        @keyframes blackToWhiteDark {
+            0% {
+                background-color: #000000;
+            }
+
+            50% {
+                background-color: #1a1a1a;
+            }
+
+            100% {
+                background-color: #1a1a1a;
+            }
+        }
+
+        body.dark-mode.animating {
+            animation: blackToWhiteDark 6s ease-in-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // Initialize dark mode before page renders to prevent flash
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="intro-space">
+        <div class="intro-content" id="intro-content">
+            <h1 class="intro-title" id="intro-title">Welcome to<br>introduction space</h1>
+        </div>
+    </div>
+
+    <img src="image_0.gif" id="project-gif" class="project-image" alt="Project 1">
+
+    <img src="image_1.png" id="event-image" class="project-image" alt="Project 2">
+
+    <img src="image_2.png" id="hf-image" class="project-image" alt="Project 3">
+
+    <div class="alien-character" id="alien">
+        <div class="speech-bubble" id="alien-bubble">hi, I am here to show you around my universe</div>
+
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="90" fill="rgba(100, 255, 150, 0.2)" />
+            <path d="M75,160 Q70,195 85,195 T95,170" fill="#b0ffce" stroke="#80e0a0" stroke-width="2" />
+            <path d="M125,160 Q130,195 115,195 T105,170" fill="#b0ffce" stroke="#80e0a0" stroke-width="2" />
+            <path d="M55,110 Q30,120 30,100 T55,90" fill="#b0ffce" stroke="#80e0a0" stroke-width="2" />
+            <path d="M145,110 Q170,120 170,100 T145,90" fill="#b0ffce" stroke="#80e0a0" stroke-width="2" />
+            <path d="M50,100 Q50,30 100,30 T150,100 Q150,160 100,180 Q50,160 50,100 Z" fill="#b0ffce" stroke="#80e0a0"
+                stroke-width="2" />
+            <ellipse cx="75" cy="100" rx="18" ry="25" fill="#222" />
+            <ellipse cx="125" cy="100" rx="18" ry="25" fill="#222" />
+            <circle cx="80" cy="90" r="5" fill="white" />
+            <circle cx="130" cy="90" r="5" fill="white" />
+            <path d="M100,30 Q100,10 85,5" stroke="#b0ffce" stroke-width="3" fill="none" />
+            <circle cx="85" cy="5" r="4" fill="#ff70a0" />
+            <path d="M95,145 Q100,148 105,145" stroke="#50a070" stroke-width="2" fill="none" />
+        </svg>
+    </div>
+
+    <div class="hamburger-menu" id="hamburger">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <div class="theme-toggle-container">
+                <div class="theme-toggle" id="theme-toggle">
+                    <div class="theme-toggle-slider"></div>
+                </div>
+            </div>
+            <button class="skip-button" id="skip-button">Skip</button>
+        </div>
+    </div>
+
+    <div class="branding">Automate every software</div>
+    <div class="typing-container">
+        <span class="thinking-indicator">thinking<span class="thinking-dots">...</span></span>
+        <span class="typed-text"></span>
+        <span class="cursor"></span>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-home" id="nav-home-link"></a>
+        <div class="nav-links">
+            <a href="#projects" class="nav-link">projects</a>
+            <a href="#career" class="nav-link">career</a>
+            <a href="#about" class="nav-link">about me</a>
+            <a href="#contact" class="nav-link">contact</a>
+        </div>
+    </nav>
+
+    <script>
+        // ============================================
+        // REVERSE SPACE ANIMATION
+        // ============================================
+        class ReverseSpace {
+            constructor() {
+                this.canvas = document.getElementById('particle-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.stars = [];
+
+                // --- NEW: Track when user last scrolled reverse to pause auto-animation ---
+                this.lastReverseScrollTime = 0;
+
+                this.resize();
+                this.init();
+                this.setupEvents();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                if (this.whiteHole) {
+                    this.whiteHole.x = this.canvas.width * 0.7;
+                    this.whiteHole.y = this.canvas.height * 0.3;
+                }
+            }
+
+            init() {
+                this.whiteHole = {
+                    x: this.canvas.width * 0.7,
+                    y: this.canvas.height * 0.3,
+                    radius: 60, eventHorizon: 40, influenceRadius: 200
+                };
+                const starCount = 200;
+                for (let i = 0; i < starCount; i++) {
+                    this.stars.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        originalX: 0, originalY: 0,
+                        size: Math.random() * 2 + 0.5,
+                        opacity: Math.random() * 0.5 + 0.3,
+                        twinkleSpeed: Math.random() * 0.02 + 0.01,
+                        twinklePhase: Math.random() * Math.PI * 2,
+                        speed: 0.15,
+                        fadeAmount: 1,
+                        currentOpacity: 0
+                    });
+                }
+                this.stars.forEach(star => {
+                    star.originalX = star.x;
+                    star.originalY = star.y;
+                    star.currentOpacity = star.opacity;
+                });
+            }
+
+            setupEvents() {
+                window.addEventListener('resize', () => { this.resize(); this.stars = []; this.init(); });
+            }
+
+            update() {
+                // --- FIXED AUTO SCROLL LOGIC ---
+                // Only auto-advance if the user hasn't scrolled REVERSE in the last 300ms.
+                // This allows the user to "fight the current" and go back.
+                const isUserReversing = (Date.now() - this.lastReverseScrollTime) < 300;
+
+                if (!isUserReversing && timeline > 4800 && timeline < 6600) {
+                    if (!savedStarPositions) {
+                        savedStarPositions = this.stars.map(star => ({ x: star.x, y: star.y, originalX: star.originalX, originalY: star.originalY }));
+                        savedScrollTargetStar = scrollTargetStar;
+                    }
+                    timeline += 8;
+                    updateTimelineVisuals();
+                }
+
+                if (timeline === 0 && introProgress === 0 && scrollZoom === 1 && eclipseFactor === 1) {
+                    this.stars.forEach(star => { star.fadeAmount = 1; });
+                }
+
+                // Freeze stars during zoom out
+                if (timeline > 4800 && timeline <= 5400) {
+                    this.stars.forEach(star => {
+                        star.twinklePhase += star.twinkleSpeed;
+                        star.currentOpacity = star.opacity + Math.sin(star.twinklePhase) * 0.3;
+                    });
+                    return;
+                }
+
+                // Cleanup phases
+                if (timeline > 5400 && savedStarPositions) { savedStarPositions = null; }
+
+                this.stars.forEach(star => {
+                    star.twinklePhase += star.twinkleSpeed;
+                    star.currentOpacity = star.opacity + Math.sin(star.twinklePhase) * 0.3;
+                    star.originalY -= star.speed;
+                    if (star.originalY < 0) {
+                        star.originalY = this.canvas.height;
+                        star.originalX = Math.random() * this.canvas.width;
+                    }
+                    const dx = this.whiteHole.x - star.originalX;
+                    const dy = this.whiteHole.y - star.originalY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < this.whiteHole.eventHorizon) {
+                        star.originalY = this.canvas.height;
+                        star.originalX = Math.random() * this.canvas.width;
+                    }
+
+                    if (distance < this.whiteHole.influenceRadius) {
+                        const strength = 1 - (distance / this.whiteHole.influenceRadius);
+                        const bendAmount = strength * strength * 50;
+                        const angle = Math.atan2(dy, dx);
+                        const perpAngle = angle + Math.PI / 2;
+                        star.x = star.originalX + Math.cos(perpAngle) * bendAmount;
+                        star.y = star.originalY + Math.sin(perpAngle) * bendAmount;
+                        const pullStrength = strength * strength * 30;
+                        star.x += Math.cos(angle) * pullStrength;
+                        star.y += Math.sin(angle) * pullStrength;
+
+                        if (distance < this.whiteHole.eventHorizon * 1.8) {
+                            const suckStrength = (1 - distance / (this.whiteHole.eventHorizon * 1.8)) * 20;
+                            star.x += Math.cos(angle) * suckStrength;
+                            star.y += Math.sin(angle) * suckStrength;
+                        }
+                    } else {
+                        star.x = star.originalX;
+                        star.y = star.originalY;
+                    }
+                });
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                let renderScrollZoom = scrollZoom;
+                let renderEclipseFactor = eclipseFactor;
+                let renderTargetStar = scrollTargetStar;
+
+                if (timeline > 4800 && timeline <= 5400) {
+                    let t = (timeline - 4800) / 600; if (t > 1) t = 1;
+                    renderTargetStar = savedScrollTargetStar;
+                    renderScrollZoom = 4 * (1 - t) + 1 * t;
+                    renderEclipseFactor = 150 * (1 - t) + 1 * t;
+                }
+                else if (timeline > 5400 && timeline <= 6600) {
+                    if (!secondZoomTargetStar) {
+                        secondZoomTargetStar = { x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height, size: 3, opacity: 1, isEarth: true };
+                    }
+                    let t = (timeline - 5400) / 1200; if (t > 1) t = 1;
+                    renderTargetStar = secondZoomTargetStar;
+                    renderScrollZoom = 1 * (1 - t) + 2.5 * t;
+                    renderEclipseFactor = 1 * (1 - t) + 30 * t;
+                }
+                else if (timeline > 6600) { renderTargetStar = secondZoomTargetStar; renderScrollZoom = 2.5; renderEclipseFactor = 30; }
+                else if (timeline > 4200) { renderScrollZoom = 4; renderEclipseFactor = 150; }
+
+                this.ctx.save();
+                if (renderTargetStar && (renderScrollZoom > 1 || isZooming)) {
+                    const centerX = renderTargetStar.x; const centerY = renderTargetStar.y;
+                    this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+                    this.ctx.scale(renderScrollZoom, renderScrollZoom);
+                    this.ctx.translate(-centerX, -centerY);
+                } else {
+                    this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+                    this.ctx.scale(renderScrollZoom, renderScrollZoom);
+                    this.ctx.translate(-this.canvas.width / 2, -this.canvas.height / 2);
+                }
+
+                const holeX = this.whiteHole.x; const holeY = this.whiteHole.y;
+                const eventHorizon = this.whiteHole.eventHorizon; const diskRadius = this.whiteHole.radius;
+
+                if (renderEclipseFactor < 10) {
+                    this.ctx.save(); this.ctx.translate(holeX, holeY); this.ctx.rotate(-30 * Math.PI / 180); this.ctx.translate(-holeX, -holeY);
+                    this.ctx.save(); this.ctx.translate(holeX, holeY);
+
+                    const isDarkMode = document.body.classList.contains('dark-mode');
+
+                    for (let i = 1; i <= 3; i++) {
+                        const layerOffset = i * 5; const layerRadius = eventHorizon + (i * 15); const layerHeight = diskRadius * 0.15 * i;
+                        const bottomDiskGradient = this.ctx.createRadialGradient(0, layerOffset, eventHorizon * 0.5, 0, layerOffset, layerRadius);
+                        const alpha = 0.5 - (i * 0.1);
+
+                        if (isDarkMode) {
+                            // Dark disk for dark mode
+                            bottomDiskGradient.addColorStop(0, `rgba(60, 60, 60, ${alpha})`);
+                            bottomDiskGradient.addColorStop(0.5, `rgba(40, 40, 40, ${alpha * 0.7})`);
+                            bottomDiskGradient.addColorStop(1, `rgba(20, 20, 20, 0)`);
+                        } else {
+                            // Light disk for light mode
+                            bottomDiskGradient.addColorStop(0, `rgba(220, 220, 220, ${alpha})`);
+                            bottomDiskGradient.addColorStop(0.5, `rgba(180, 180, 180, ${alpha * 0.7})`);
+                            bottomDiskGradient.addColorStop(1, `rgba(140, 140, 140, 0)`);
+                        }
+
+                        this.ctx.beginPath(); this.ctx.ellipse(0, layerOffset, layerRadius, layerHeight, 0, 0, Math.PI * 2); this.ctx.fillStyle = bottomDiskGradient; this.ctx.fill();
+                    }
+                    this.ctx.restore();
+
+                    const horizonGradient = this.ctx.createRadialGradient(holeX, holeY, 0, holeX, holeY, eventHorizon);
+                    if (isDarkMode) {
+                        // Dark center for dark mode
+                        horizonGradient.addColorStop(0, 'rgba(40, 40, 40, 1)');
+                        horizonGradient.addColorStop(1, 'rgba(30, 30, 30, 0.3)');
+                    } else {
+                        // White center for light mode
+                        horizonGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                        horizonGradient.addColorStop(1, 'rgba(230, 230, 230, 0.3)');
+                    }
+
+                    this.ctx.beginPath(); this.ctx.arc(holeX, holeY, eventHorizon, 0, Math.PI * 2); this.ctx.fillStyle = horizonGradient; this.ctx.fill();
+                    this.ctx.restore();
+                }
+
+                this.stars.forEach(star => {
+                    const starOpacity = star.currentOpacity * (star.fadeAmount || 1);
+                    if (starOpacity > 0.01) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                        // White stars in dark mode, black stars in light mode
+                        const starColor = document.body.classList.contains('dark-mode') ? '255, 255, 255' : '0, 0, 0';
+                        this.ctx.fillStyle = `rgba(${starColor}, ${starOpacity})`;
+                        this.ctx.fill();
+                    }
+                });
+
+                if (secondZoomTargetStar && secondZoomTargetStar.isEarth && timeline > 5400 && timeline <= 6600) {
+                    const earthStar = secondZoomTargetStar;
+                    this.ctx.beginPath(); this.ctx.arc(earthStar.x, earthStar.y, earthStar.size, 0, Math.PI * 2);
+                    const earthGradient = this.ctx.createRadialGradient(earthStar.x, earthStar.y, 0, earthStar.x, earthStar.y, earthStar.size);
+                    earthGradient.addColorStop(0, '#4da6ff'); earthGradient.addColorStop(0.6, '#0066cc'); earthGradient.addColorStop(1, '#003366');
+                    this.ctx.fillStyle = earthGradient; this.ctx.fill();
+                }
+                this.ctx.restore();
+
+                if (renderTargetStar && renderEclipseFactor > 1) {
+                    const baseRadius = renderTargetStar.size * MAX_ZOOM; const visibleRadius = baseRadius * renderEclipseFactor;
+
+                    // ============================================
+                    //  FILE SWITCH LOGIC
+                    // ============================================
+                    if (renderTargetStar.isEarth) {
+                        window.location.href = "earth.html";
+                        return;
+                    } else {
+                        this.ctx.beginPath(); this.ctx.arc(this.canvas.width / 2, this.canvas.height / 2, visibleRadius, 0, Math.PI * 2); this.ctx.fillStyle = 'black'; this.ctx.fill();
+                    }
+                }
+
+                if (alienTriggered) { updateAlienState(); }
+            }
+
+            animate() { this.update(); this.draw(); requestAnimationFrame(() => this.animate()); }
+            activate() { this.canvas.classList.add('active'); this.animate(); }
+            deactivate() { this.canvas.classList.remove('active'); }
+        }
+
+        // ============================================
+        // ANIMATION STATE VARIABLES
+        // ============================================
+        let reverseSpace = null;
+        let scrollZoom = 1;
+        let scrollTargetStar = null;
+        let isZooming = false;
+        let eclipseFactor = 1;
+        const MAX_ZOOM = 4;
+        const MAX_ECLIPSE_FACTOR = 150;
+        let introProgress = 0;
+        let timeline = 0;
+        let savedScrollTargetStar = null;
+        let savedStarPositions = null;
+        let secondZoomTargetStar = null;
+        let alienTriggered = false;
+        let alienFlightProgress = 0;
+        let stage6Triggered = false;
+        let stage6PresentationProgress = 0;
+        let returnToCenterProgress = 0;
+        let randomFlightProgress = 0;
+        let flyRightProgress = 0;
+        let flyOutProgress = 0;
+        let isSpaceModeActive = false;
+
+        const introSpace = document.getElementById('intro-space');
+        const introContent = document.getElementById('intro-content');
+        const introTitle = document.getElementById('intro-title');
+        const alien = document.getElementById('alien');
+        const alienBubble = document.getElementById('alien-bubble');
+        const projectGif = document.getElementById('project-gif');
+        const eventImage = document.getElementById('event-image');
+        const hfImage = document.getElementById('hf-image');
+
+        alien.addEventListener('click', () => { if (!stage6Triggered && timeline < 600) { alienBubble.classList.add('show'); } });
+        projectGif.addEventListener('click', () => { window.open('https://github.com/prasadgola/Browser_agent/tree/main/X_gpt_oss_agent', '_blank'); });
+        eventImage.addEventListener('click', () => { window.open('https://storage.googleapis.com/event-sponsor-frontend/index.html', '_blank'); });
+        hfImage.addEventListener('click', () => { window.open('https://huggingface.co/BasavaprasadGola', '_blank'); });
+
+        function updateTimelineVisuals() {
+            if (introProgress > 0) {
+                const gradientPos = 100 - (introProgress * 1.5);
+                introTitle.style.backgroundPosition = `${gradientPos}% 0%`;
+
+                if (timeline > 0) {
+                    const scale = 1 + (timeline / 6);
+                    introContent.style.transform = `scale(${scale})`;
+                    if (timeline > 100) {
+                        const fade = 1 - ((timeline - 100) / 100);
+                        introSpace.style.opacity = Math.max(0, fade);
+                    } else { introSpace.style.opacity = 1; }
+                } else { introSpace.style.opacity = Math.min(introProgress / 10, 1); }
+            } else { introSpace.style.opacity = 0; }
+
+            if (timeline > 300) {
+                if (!alienTriggered) { alienTriggered = true; alien.classList.add('visible'); }
+            } else {
+                if (alienTriggered) { alienTriggered = false; alien.classList.remove('visible'); alienFlightProgress = 0; }
+            }
+
+            if (timeline > 600) {
+                if (!stage6Triggered) { stage6Triggered = true; alienBubble.classList.remove('show'); }
+            } else {
+                if (stage6Triggered) {
+                    stage6Triggered = false;
+                    stage6PresentationProgress = 0;
+                    projectGif.classList.remove('visible');
+                    eventImage.classList.remove('visible');
+                    hfImage.classList.remove('visible');
+                    alienBubble.classList.remove('show');
+                    alienBubble.innerText = "hi, I am here to show you around my universe";
+                }
+            }
+
+            if (stage6Triggered && stage6PresentationProgress > 0.8) {
+                if (timeline > 3900) { alienBubble.classList.remove('show'); hfImage.classList.remove('visible'); }
+                else if (timeline > 3600) { alienBubble.innerText = "see you in the next space"; hfImage.classList.remove('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 3300) { alienBubble.innerText = "need to fine tune for reasoning use cases"; hfImage.classList.add('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 3000) { alienBubble.innerText = "here I trained few english and kannada base models"; hfImage.classList.add('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 2700) { alienBubble.innerText = "moving on to some base models"; projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 2400) { alienBubble.innerText = "click on it to try"; projectGif.classList.remove('visible'); eventImage.classList.add('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 2100) { alienBubble.innerText = "Gemini API is expired, you won't able to connect the server"; projectGif.classList.remove('visible'); eventImage.classList.add('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 1800) { alienBubble.innerText = "Nice, moving on to the next code..."; projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 1500) { alienBubble.innerText = "click on it to find the code of it"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 1200) { alienBubble.innerText = "do you want to know more?"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 900) { alienBubble.innerText = "it's browser agent using local gpt-oss:20b LLM"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else { alienBubble.innerText = "looking what I recently worked on"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+            }
+        }
+
+        function updateAlienState() {
+            if (alienFlightProgress < 1) alienFlightProgress += 0.005;
+            const t = alienFlightProgress;
+            if (stage6Triggered && t >= 1) { if (stage6PresentationProgress < 1) stage6PresentationProgress += 0.01; }
+            if (timeline > 1800) { if (returnToCenterProgress < 1) returnToCenterProgress += 0.01; } else { if (returnToCenterProgress > 0) returnToCenterProgress -= 0.01; }
+            if (timeline > 2100 && timeline < 2700) { if (randomFlightProgress < 100) randomFlightProgress += 0.01; }
+            if (timeline > 3000) { if (flyRightProgress < 1) flyRightProgress += 0.01; } else { if (flyRightProgress > 0) flyRightProgress -= 0.01; }
+            if (timeline > 3900) { if (flyOutProgress < 1) flyOutProgress += 0.005; } else { if (flyOutProgress > 0) flyOutProgress -= 0.005; }
+
+            const p = stage6PresentationProgress;
+            const startX = window.innerWidth / 2 + 300;
+            const spiralX = Math.cos(t * Math.PI * 2.5) * (600 * (1 - t));
+            let x = (startX * (1 - t)) + spiralX;
+            let y = Math.sin(t * Math.PI * 2) * 200 * (1 - t);
+
+            let offsetX = 0; let offsetY = 0;
+            if (p > 0) { const easeP = 1 - Math.pow(1 - p, 3); offsetX = (350 * easeP); offsetY = (-50 * easeP); }
+            if (returnToCenterProgress > 0) { const easeReturn = 1 - Math.pow(1 - returnToCenterProgress, 3); offsetX = offsetX * (1 - easeReturn); offsetY = offsetY * (1 - easeReturn); }
+
+            let randomX = 0; let randomY = 0;
+            if (timeline > 2100) {
+                const t_rand = randomFlightProgress;
+                randomX = Math.sin(t_rand * 2) * 50; randomY = Math.cos(t_rand * 3) * 30;
+                let randomStrength = Math.min((timeline - 2100) / 100, 1);
+                if (timeline > 2700) { const fadeOut = Math.min((timeline - 2700) / 100, 1); randomStrength *= (1 - fadeOut); }
+                x += (offsetX * (1 - randomStrength)) + (randomX * randomStrength);
+                y += (offsetY * (1 - randomStrength)) + (randomY * randomStrength);
+            } else { x += offsetX; y += offsetY; }
+
+            if (flyRightProgress > 0) { const easeRight = 1 - Math.pow(1 - flyRightProgress, 3); const rightEdge = (window.innerWidth / 2) - 80; x += (rightEdge * easeRight); }
+            if (flyOutProgress > 0) { const easeOut = flyOutProgress * flyOutProgress; x = x * (1 - easeOut); y = y - ((window.innerHeight / 2 + 300) * easeOut); }
+
+            let rotation = t * -15;
+            if (returnToCenterProgress > 0 && timeline <= 2100) { rotation = -15 * (1 - returnToCenterProgress); }
+            if (timeline > 2100) { let tiltFactor = Math.min((timeline - 2100) / 50, 1); if (timeline > 2700) { const fadeOut = Math.min((timeline - 2700) / 50, 1); tiltFactor *= (1 - fadeOut); } rotation = 15 * tiltFactor; }
+            if (timeline > 3000) { let fadeBack = Math.min((timeline - 3000) / 50, 1); if (timeline > 3300) { const fadeRight = Math.min((timeline - 3300) / 50, 1); fadeBack = 1 - fadeRight; rotation = (-15 * fadeBack) + (15 * fadeRight); } else { rotation = -15 * fadeBack; } }
+            if (timeline > 3900) { const straighten = Math.min((timeline - 3900) / 50, 1); rotation = 15 * (1 - straighten); }
+
+            let scale = 1; let zIndex = 3000; let brightness = 1;
+            if (t < 0.3) { scale = 1 - t; zIndex = 3000; } else if (t >= 0.3 && t < 0.7) { scale = 0.5 + (t - 0.3); brightness = 0.6; zIndex = 1; } else { scale = 0.9 + ((t - 0.7)); brightness = 1; zIndex = 3000; }
+            if (t >= 1 && flyOutProgress === 0) { const time = Date.now() / 800; y = y + Math.sin(time) * 15; scale = 1; }
+
+            alien.style.zIndex = zIndex; alien.style.filter = `brightness(${brightness}) drop-shadow(0 0 20px rgba(255,255,255,${0.4 * brightness}))`;
+            alien.style.transform = `translate(${x}px, ${y}px) scale(${scale}) rotate(${rotation}deg)`;
+        }
+
+        window.addEventListener('wheel', (e) => {
+            if (!reverseSpace || !reverseSpace.canvas.classList.contains('active')) return;
+            e.preventDefault();
+
+            if (e.deltaY < 0) {
+                // FORWARD SCROLL
+                if (!isZooming) {
+                    isZooming = true;
+                    if (!scrollTargetStar) { scrollTargetStar = reverseSpace.stars[Math.floor(Math.random() * reverseSpace.stars.length)]; }
+                }
+                if (scrollZoom < MAX_ZOOM) { scrollZoom += 0.05; scrollZoom = Math.min(scrollZoom, MAX_ZOOM); }
+                else if (eclipseFactor < MAX_ECLIPSE_FACTOR) { eclipseFactor *= 1.1; }
+                else if (introProgress < 100) { introProgress += 2; updateTimelineVisuals(); }
+                else { if (timeline <= 4800) { timeline += 5; updateTimelineVisuals(); } }
+            } else {
+                // REVERSE SCROLL
+
+                // --- NEW: Record timestamp to pause auto-scroll in update() ---
+                if (reverseSpace) reverseSpace.lastReverseScrollTime = Date.now();
+
+                if (timeline > 0) {
+                    timeline -= 5;
+                    updateTimelineVisuals();
+                    if (timeline <= 5400 && secondZoomTargetStar) { secondZoomTargetStar = null; }
+                    if (timeline <= 4800 && savedStarPositions) { savedStarPositions = null; savedScrollTargetStar = null; }
+                } else if (introProgress > 0) {
+                    introProgress -= 2;
+                    updateTimelineVisuals();
+                } else if (eclipseFactor > 1) {
+                    eclipseFactor /= 1.1;
+                    if (eclipseFactor < 1.01) eclipseFactor = 1;
+                } else {
+                    scrollZoom -= 0.05;
+                    scrollZoom = Math.max(scrollZoom, 1);
+
+                    if (scrollZoom === 1 && isSpaceModeActive) {
+                        triggerReverseIntro();
+                    }
+                }
+
+                if (scrollZoom === 1 && eclipseFactor === 1) {
+                    isZooming = false;
+                    scrollTargetStar = null;
+                }
+            }
+        }, { passive: false });
+
+        function triggerReverseIntro() {
+            isSpaceModeActive = false;
+            reverseSpace.deactivate();
+            navbar.classList.remove('active');
+            const navHomeLink = document.getElementById('nav-home-link');
+            navHomeLink.textContent = '';
+            document.querySelector('.branding').style.display = 'block';
+            document.querySelector('.typing-container').style.display = 'block';
+            const name = "basavaprasad";
+            const beforeName = "I am here ";
+            const afterName = " watching bad and good side of the aisle model use cases";
+
+            typedTextElement.innerHTML =
+                '<span class="fade-text" style="color: white">' + beforeName + '</span>' +
+                '<span class="keep-text reversing-name" id="name-element">' + name + '</span>' +
+                '<span class="fade-text" style="color: white">' + afterName + '</span>';
+
+            setTimeout(() => {
+            }, 2500);
+        }
+
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const navbar = document.getElementById('navbar');
+        const skipButton = document.getElementById('skip-button');
+
+        hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); sidebar.classList.toggle('active'); sidebarOverlay.classList.toggle('active'); navbar.classList.toggle('sidebar-open'); });
+        sidebarOverlay.addEventListener('click', () => { hamburger.classList.remove('active'); sidebar.classList.remove('active'); sidebarOverlay.classList.remove('active'); navbar.classList.remove('sidebar-open'); });
+
+        skipButton.addEventListener('click', () => {
+            document.querySelector('.branding').style.display = 'none';
+            document.querySelector('.typing-container').style.display = 'none';
+            navbar.classList.add('active');
+            document.getElementById('nav-home-link').textContent = 'basavaprasad';
+
+            if (!reverseSpace) {
+                reverseSpace = new ReverseSpace();
+            }
+            reverseSpace.activate();
+            isSpaceModeActive = true;
+
+            sidebar.classList.add('stars-active');
+            hamburger.classList.remove('active');
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            navbar.classList.remove('sidebar-open');
+
+            // Update background based on theme
+            if (document.body.classList.contains('dark-mode')) {
+                document.body.style.backgroundColor = '#1a1a1a';
+            } else {
+                document.body.style.backgroundColor = '#ffffff';
+            }
+        });
+
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.classList.add('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.classList.toggle('dark');
+
+            // Save theme preference
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                // Update body background if in space mode
+                if (isSpaceModeActive || document.body.style.backgroundColor === 'rgb(255, 255, 255)') {
+                    document.body.style.backgroundColor = '#1a1a1a';
+                }
+            } else {
+                localStorage.setItem('theme', 'light');
+                // Update body background if in space mode
+                if (isSpaceModeActive || document.body.style.backgroundColor === 'rgb(26, 26, 26)') {
+                    document.body.style.backgroundColor = '#ffffff';
+                }
+            }
+
+            // Force redraw of stars and white hole with new theme colors
+            if (reverseSpace) {
+                reverseSpace.draw();
+            }
+        });
+
+        const text1 = "Can transformer models can automate every software problems in the world?";
+        const text2 = "AI's potential to automate increasingly complex software problems - but \"every\" problem is where reality sets a boundary, at least for the foreseeable future.";
+        const text3 = "What would you think the swift looks like from using non predictable software tools to predictable software tools like models in the software developement looks like?";
+        const text4 = "The shift will look like moving from manual craftsmanship to high-level orchestration - developers will spend less time writing individual functions and more time defining architectures, specifying behaviors, and validating outputs, similar to how you already direct your automation agents rather than clicking every LinkedIn button yourself.";
+        const text5 = "that answer looks like AI Slop again";
+        const text6 = "I am here basavaprasad watching bad and good side of the aisle model use cases";
+
+        const typedTextElement = document.querySelector('.typed-text');
+        const cursorElement = document.querySelector('.cursor');
+        const thinkingIndicator = document.querySelector('.thinking-indicator');
+        let charIndex = 0;
+        let currentText = text1;
+        let textPhase = 1;
+
+        setTimeout(() => { typeText(); }, 6000);
+
+        function typeText() {
+            if (charIndex < currentText.length) {
+                typedTextElement.textContent += currentText.charAt(charIndex);
+                charIndex++;
+                let typingSpeed;
+                if (textPhase === 1 || textPhase === 3 || textPhase === 5 || textPhase === 6) {
+                    typingSpeed = Math.random() * 100 + 50;
+                    if (Math.random() < 0.1) typingSpeed += Math.random() * 300 + 200;
+                    if (currentText.charAt(charIndex - 1) === ',' || currentText.charAt(charIndex - 1) === '?') typingSpeed += 200;
+                } else {
+                    typingSpeed = Math.random() * 20 + 20;
+                    if (currentText.charAt(charIndex - 1) === ',' || currentText.charAt(charIndex - 1) === '.' || currentText.charAt(charIndex - 1) === '-') typingSpeed += 50;
+                }
+                setTimeout(typeText, typingSpeed);
+            } else if (textPhase === 1) {
+                textPhase = 2;
+                setTimeout(() => {
+                    typedTextElement.textContent = ''; cursorElement.style.display = 'none'; thinkingIndicator.classList.add('active');
+                    setTimeout(() => { charIndex = 0; currentText = text2; typeText(); }, 800);
+                }, 1000);
+            } else if (textPhase === 2) {
+                thinkingIndicator.classList.remove('active'); textPhase = 3;
+                setTimeout(() => {
+                    fadeTextToWhite(() => {
+                        typedTextElement.textContent = ''; typedTextElement.style.color = '#000000'; cursorElement.style.display = 'inline-block'; charIndex = 0; currentText = text3; typeText();
+                    });
+                }, 1000);
+            } else if (textPhase === 3) {
+                textPhase = 4;
+                setTimeout(() => {
+                    typedTextElement.textContent = ''; cursorElement.style.display = 'none'; thinkingIndicator.classList.add('active');
+                    setTimeout(() => { charIndex = 0; currentText = text4; typeText(); }, 800);
+                }, 1000);
+            } else if (textPhase === 4) {
+                thinkingIndicator.classList.remove('active'); textPhase = 5;
+                setTimeout(() => {
+                    fadeTextToWhite(() => {
+                        typedTextElement.textContent = ''; typedTextElement.style.color = '#000000'; cursorElement.style.display = 'inline-block'; charIndex = 0; currentText = text5; typeText();
+                    });
+                }, 1000);
+            } else if (textPhase === 5) {
+                textPhase = 6;
+                setTimeout(() => { typedTextElement.textContent = ''; charIndex = 0; currentText = text6; typeText(); }, 1000);
+            } else if (textPhase === 6) {
+                cursorElement.style.display = 'none';
+                setTimeout(() => {
+                    const fullText = typedTextElement.textContent;
+                    const name = "basavaprasad";
+                    const nameIndex = fullText.indexOf(name);
+                    if (nameIndex !== -1) {
+                        const beforeName = fullText.substring(0, nameIndex);
+                        const afterName = fullText.substring(nameIndex + name.length);
+                        typedTextElement.innerHTML = '<span class="fade-text">' + beforeName + '</span>' + '<span class="keep-text" id="name-element">' + name + '</span>' + '<span class="fade-text">' + afterName + '</span>';
+                        setTimeout(() => {
+                            const fadeElements = document.querySelectorAll('.fade-text');
+                            fadeElements.forEach(el => { el.style.transition = 'color 2s ease-out'; el.style.color = '#ffffff'; });
+
+                            setTimeout(() => {
+                                const nameElement = document.getElementById('name-element');
+                                const navHomeLink = document.getElementById('nav-home-link');
+                                nameElement.classList.add('flying-name');
+                                setTimeout(() => { fadeElements.forEach(el => el.style.display = 'none'); }, 500);
+
+                                setTimeout(() => {
+                                    nameElement.style.display = 'none';
+                                    navHomeLink.textContent = 'basavaprasad';
+                                    navbar.classList.add('active');
+                                    if (!reverseSpace) {
+                                        reverseSpace = new ReverseSpace();
+                                        reverseSpace.activate();
+                                        sidebar.classList.add('stars-active');
+                                    } else {
+                                        reverseSpace.activate();
+                                    }
+                                    isSpaceModeActive = true;
+                                }, 3000);
+                            }, 2000);
+                        }, 500);
+                    }
+                }, 1500);
+            }
+        }
+
+        function fadeTextToWhite(callback) {
+            let colorStep = 0;
+            const fadeInterval = setInterval(() => {
+                colorStep += 5;
+                const colorValue = Math.min(255, colorStep);
+                const hexColor = '#' + colorValue.toString(16).padStart(2, '0').repeat(3);
+                typedTextElement.style.color = hexColor;
+
+                if (colorStep >= 255) {
+                    clearInterval(fadeInterval);
+                    setTimeout(callback, 300);
+                }
+            }, 30);
+        }
+    </script>
+
+</html>

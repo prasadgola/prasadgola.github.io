@@ -787,14 +787,14 @@
     </div>
 
     <nav class="navbar" id="navbar">
-        <a href="#" class="nav-home" id="nav-home-link"></a>
-        <div class="nav-links">
+        <a href="#" class="nav-home" id="nav-home-link" onclick="backToZero(event)""></a>
+        <div class=" nav-links">
             <button class="nav-link" id="projects-nav-link" onclick="scrollToProjects()"
                 style="background:none; border:none; cursor:pointer; font-family:inherit;">projects</button>
             <a href="#career" class="nav-link">career</a>
             <a href="#about" class="nav-link">about me</a>
             <a href="#contact" class="nav-link">contact</a>
-        </div>
+            </div>
     </nav>
 
     <script>
@@ -1109,11 +1109,14 @@
             if (timeline > 300) {
                 if (!alienTriggered) { alienTriggered = true; alien.classList.add('visible'); }
             } else {
-                if (alienTriggered) { alienTriggered = false; alien.classList.remove('visible'); alienFlightProgress = 0; }
+                if (alienTriggered) { alienTriggered = false; alien.classList.remove('visible'); alienFlightProgress = 0; alienBubble.classList.remove('show'); }
             }
 
             if (timeline > 600) {
                 if (!stage6Triggered) { stage6Triggered = true; alienBubble.classList.remove('show'); }
+            } else {
+                stage6Triggered = false;
+                stage6PresentationProgress = 0;
             }
             if (stage6Triggered && stage6PresentationProgress > 0.8) {
                 if (timeline > 3900) { alienBubble.classList.remove('show'); hfImage.classList.remove('visible'); }
@@ -1128,6 +1131,10 @@
                 else if (timeline > 1200) { alienBubble.innerText = "And it's open source for all people on earth"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
                 else if (timeline > 900) { alienBubble.innerText = "it uses browser agent using local gpt-oss:20b LLM from earth"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
                 else { alienBubble.innerText = "My Agent automates X.com on earth"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+            } else {
+                projectGif.classList.remove('visible');
+                eventImage.classList.remove('visible');
+                hfImage.classList.remove('visible');
             }
         }
 
@@ -1528,6 +1535,56 @@
             });
 
             autoScrollRequest = requestAnimationFrame(autoStep);
+        }
+
+        function backToZero(e) {
+            if (e) e.preventDefault(); // Prevent page reload
+
+            // Stop any existing auto-scroll before starting the rewind
+            if (typeof stopAutoScroll === 'function') stopAutoScroll();
+
+            const rewindSpeed = 15;
+
+            function animateBack() {
+                let stillMoving = false;
+
+                // 1. Reverse Timeline (Projects/Alien phase)
+                if (timeline > 0) {
+                    timeline -= rewindSpeed;
+                    if (timeline < 0) timeline = 0;
+                    stillMoving = true;
+                }
+                // 2. Reverse Intro Text
+                else if (introProgress > 0) {
+                    introProgress -= 5;
+                    if (introProgress < 0) introProgress = 0;
+                    stillMoving = true;
+                }
+                // 3. Reverse Eclipse
+                else if (eclipseFactor > 1) {
+                    eclipseFactor /= 1.2;
+                    if (eclipseFactor < 1.01) eclipseFactor = 1;
+                    stillMoving = true;
+                }
+                // 4. Reverse Zoom
+                else if (scrollZoom > 1) {
+                    scrollZoom -= 0.1;
+                    if (scrollZoom < 1) {
+                        scrollZoom = 1;
+                        isZooming = false;
+                        scrollTargetStar = null;
+                    }
+                    stillMoving = true;
+                }
+
+                updateTimelineVisuals();
+
+                if (stillMoving) {
+                    requestAnimationFrame(animateBack);
+                }
+            }
+
+            animateBack();
         }
     </script>
 

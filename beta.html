@@ -729,7 +729,7 @@
 
     <div id="intro-space">
         <div class="intro-content" id="intro-content">
-            <h1 class="intro-title" id="intro-title">Welcome to<br>introduction space</h1>
+            <h1 class="intro-title" id="intro-title">Welcome to projects planet</h1>
         </div>
     </div>
 
@@ -861,7 +861,7 @@
                 // This allows the user to "fight the current" and go back.
                 const isUserReversing = (Date.now() - this.lastReverseScrollTime) < 300;
 
-                if (!isUserReversing && timeline > 4800 && timeline < 6600) {
+                if (!isUserReversing && timeline > 4200 && timeline < 6600) {
                     if (!savedStarPositions) {
                         savedStarPositions = this.stars.map(star => ({ x: star.x, y: star.y, originalX: star.originalX, originalY: star.originalY }));
                         savedScrollTargetStar = scrollTargetStar;
@@ -875,7 +875,7 @@
                 }
 
                 // Freeze stars during zoom out
-                if (timeline > 4800 && timeline <= 5400) {
+                if (timeline > 4200 && timeline <= 5400) {
                     this.stars.forEach(star => {
                         star.twinklePhase += star.twinkleSpeed;
                         star.currentOpacity = star.opacity + Math.sin(star.twinklePhase) * 0.3;
@@ -933,8 +933,8 @@
                 let renderEclipseFactor = eclipseFactor;
                 let renderTargetStar = scrollTargetStar;
 
-                if (timeline > 4800 && timeline <= 5400) {
-                    let t = (timeline - 4800) / 600; if (t > 1) t = 1;
+                if (timeline > 4200 && timeline <= 5400) {
+                    let t = (timeline - 4200) / 600; if (t > 1) t = 1;
                     renderTargetStar = savedScrollTargetStar;
                     renderScrollZoom = 4 * (1 - t) + 1 * t;
                     renderEclipseFactor = 150 * (1 - t) + 1 * t;
@@ -1113,37 +1113,30 @@
 
             if (timeline > 600) {
                 if (!stage6Triggered) { stage6Triggered = true; alienBubble.classList.remove('show'); }
-            } else {
-                if (stage6Triggered) {
-                    stage6Triggered = false;
-                    stage6PresentationProgress = 0;
-                    projectGif.classList.remove('visible');
-                    eventImage.classList.remove('visible');
-                    hfImage.classList.remove('visible');
-                    alienBubble.classList.remove('show');
-                    alienBubble.innerText = "hi, I am here to show you around my universe";
-                }
             }
-
             if (stage6Triggered && stage6PresentationProgress > 0.8) {
                 if (timeline > 3900) { alienBubble.classList.remove('show'); hfImage.classList.remove('visible'); }
-                else if (timeline > 3600) { alienBubble.innerText = "see you in the next space"; hfImage.classList.remove('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 3300) { alienBubble.innerText = "need to fine tune for reasoning use cases"; hfImage.classList.add('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 3000) { alienBubble.innerText = "here I trained few english and kannada base models"; hfImage.classList.add('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 3600) { alienBubble.innerText = "Let's see my journey on earth"; hfImage.classList.remove('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 3300) { alienBubble.innerText = "only matter of fine tuning for there specific use cases"; hfImage.classList.add('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 3000) { alienBubble.innerText = "here I trained few english and kannada base models for reasoning use cases"; hfImage.classList.add('visible'); projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); alienBubble.classList.add('show'); }
                 else if (timeline > 2700) { alienBubble.innerText = "moving on to some base models"; projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 2400) { alienBubble.innerText = "click on it to try"; projectGif.classList.remove('visible'); eventImage.classList.add('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 2100) { alienBubble.innerText = "Gemini API is expired, you won't able to connect the server"; projectGif.classList.remove('visible'); eventImage.classList.add('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 1800) { alienBubble.innerText = "Nice, moving on to the next code..."; projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 1500) { alienBubble.innerText = "click on it to find the code of it"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 1200) { alienBubble.innerText = "do you want to know more?"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else if (timeline > 900) { alienBubble.innerText = "it's browser agent using local gpt-oss:20b LLM"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
-                else { alienBubble.innerText = "looking what I recently worked on"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 2400) { alienBubble.innerText = "This agent will find people on earth to get to gether and host events"; projectGif.classList.remove('visible'); eventImage.classList.add('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 2100) { alienBubble.innerText = "Here is events agent to keep people excited on earth"; projectGif.classList.remove('visible'); eventImage.classList.add('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 1800) { alienBubble.innerText = "Moving on to the next excitement"; projectGif.classList.remove('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 1500) { alienBubble.innerText = "you can just click on it to dive deep"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 1200) { alienBubble.innerText = "And it's open source for all people on earth"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else if (timeline > 900) { alienBubble.innerText = "it uses browser agent using local gpt-oss:20b LLM from earth"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
+                else { alienBubble.innerText = "My Agent automates X.com on earth"; projectGif.classList.add('visible'); eventImage.classList.remove('visible'); hfImage.classList.remove('visible'); alienBubble.classList.add('show'); }
             }
         }
 
         function updateAlienState() {
             if (alienFlightProgress < 1) alienFlightProgress += 0.005;
             const t = alienFlightProgress;
+            if (t >= 1 && timeline > 300 && timeline < 600) {
+                alienBubble.innerText = "Hi I am aigi here living on projects planet. I am so exicited to meet you and show you my contributions to earth";
+                alienBubble.classList.add('show');
+            }
             if (stage6Triggered && t >= 1) { if (stage6PresentationProgress < 1) stage6PresentationProgress += 0.01; }
             if (timeline > 1800) { if (returnToCenterProgress < 1) returnToCenterProgress += 0.01; } else { if (returnToCenterProgress > 0) returnToCenterProgress -= 0.01; }
             if (timeline > 2100 && timeline < 2700) { if (randomFlightProgress < 100) randomFlightProgress += 0.01; }
@@ -1176,8 +1169,7 @@
             let rotation = t * -15;
             if (returnToCenterProgress > 0 && timeline <= 2100) { rotation = -15 * (1 - returnToCenterProgress); }
             if (timeline > 2100) { let tiltFactor = Math.min((timeline - 2100) / 50, 1); if (timeline > 2700) { const fadeOut = Math.min((timeline - 2700) / 50, 1); tiltFactor *= (1 - fadeOut); } rotation = 15 * tiltFactor; }
-            if (timeline > 3000) { let fadeBack = Math.min((timeline - 3000) / 50, 1); if (timeline > 3300) { const fadeRight = Math.min((timeline - 3300) / 50, 1); fadeBack = 1 - fadeRight; rotation = (-15 * fadeBack) + (15 * fadeRight); } else { rotation = -15 * fadeBack; } }
-            if (timeline > 3900) { const straighten = Math.min((timeline - 3900) / 50, 1); rotation = 15 * (1 - straighten); }
+            if (timeline > 3000) { let fadeBack = Math.min((timeline - 3000) / 50, 1); if (timeline > 3300) { const fadeRight = Math.min((timeline - 3300) / 50, 1); fadeBack = 1 - fadeRight; rotation = (-15 * fadeBack) + (-15 * fadeRight); } else { rotation = -15 * fadeBack; } }
 
             let scale = 1; let zIndex = 3000; let brightness = 1;
             if (t < 0.3) { scale = 1 - t; zIndex = 3000; } else if (t >= 0.3 && t < 0.7) { scale = 0.5 + (t - 0.3); brightness = 0.6; zIndex = 1; } else { scale = 0.9 + ((t - 0.7)); brightness = 1; zIndex = 3000; }
@@ -1200,7 +1192,7 @@
                 if (scrollZoom < MAX_ZOOM) { scrollZoom += 0.05; scrollZoom = Math.min(scrollZoom, MAX_ZOOM); }
                 else if (eclipseFactor < MAX_ECLIPSE_FACTOR) { eclipseFactor *= 1.1; }
                 else if (introProgress < 100) { introProgress += 2; updateTimelineVisuals(); }
-                else { if (timeline <= 4800) { timeline += 5; updateTimelineVisuals(); } }
+                else { if (timeline <= 4200) { timeline += 5; updateTimelineVisuals(); } }
             } else {
                 // REVERSE SCROLL
 
@@ -1211,7 +1203,7 @@
                     timeline -= 5;
                     updateTimelineVisuals();
                     if (timeline <= 5400 && secondZoomTargetStar) { secondZoomTargetStar = null; }
-                    if (timeline <= 4800 && savedStarPositions) { savedStarPositions = null; savedScrollTargetStar = null; }
+                    if (timeline <= 4200 && savedStarPositions) { savedStarPositions = null; savedScrollTargetStar = null; }
                 } else if (introProgress > 0) {
                     introProgress -= 2;
                     updateTimelineVisuals();
@@ -1325,12 +1317,12 @@
             }
         });
 
-        const text1 = "Can transformer models can automate every software problems in the world?";
+        const text1 = "Can transformer models really automate every software development and management tools developed till today?";
         const text2 = "AI's potential to automate increasingly complex software problems - but \"every\" problem is where reality sets a boundary, at least for the foreseeable future.";
-        const text3 = "What would you think the swift looks like from using non predictable software tools to predictable software tools like models in the software developement looks like?";
-        const text4 = "The shift will look like moving from manual craftsmanship to high-level orchestration - developers will spend less time writing individual functions and more time defining architectures, specifying behaviors, and validating outputs, similar to how you already direct your automation agents rather than clicking every LinkedIn button yourself.";
+        const text3 = "What would you think the shift from using non predictable software tools to predictable software tools like models in the software developement ?";
+        const text4 = "The shift from traditional deterministic tools to probabilistic models in software development is already underway, but it's messier than most people expect.";
         const text5 = "that answer looks like AI Slop again";
-        const text6 = "I am here basavaprasad watching bad and good side of the aisle model use cases";
+        const text6 = "On another note, I am here basavaprasad looking both pros and cons of the models and it's potential.";
 
         const typedTextElement = document.querySelector('.typed-text');
         const cursorElement = document.querySelector('.cursor');

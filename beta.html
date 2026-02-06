@@ -789,7 +789,8 @@
     <nav class="navbar" id="navbar">
         <a href="#" class="nav-home" id="nav-home-link"></a>
         <div class="nav-links">
-            <a href="#projects" class="nav-link">projects</a>
+            <button class="nav-link" id="projects-nav-link" onclick="scrollToProjects()"
+                style="background:none; border:none; cursor:pointer; font-family:inherit;">projects</button>
             <a href="#career" class="nav-link">career</a>
             <a href="#about" class="nav-link">about me</a>
             <a href="#contact" class="nav-link">contact</a>
@@ -1134,7 +1135,7 @@
             if (alienFlightProgress < 1) alienFlightProgress += 0.005;
             const t = alienFlightProgress;
             if (t >= 1 && timeline > 300 && timeline < 600) {
-                alienBubble.innerText = "Hi I am aigi here living on projects planet. I am so exicited to meet you and show you my contributions to earth";
+                alienBubble.innerText = "Hi I am aigi here living on projects planet. I am exicited to meet you and show you my contributions to earth";
                 alienBubble.classList.add('show');
             }
             if (stage6Triggered && t >= 1) { if (stage6PresentationProgress < 1) stage6PresentationProgress += 0.01; }
@@ -1408,6 +1409,7 @@
                                         reverseSpace.activate();
                                     }
                                     isSpaceModeActive = true;
+                                    initInterruptibleScroll();
                                 }, 3000);
                             }, 2000);
                         }, 500);
@@ -1429,6 +1431,103 @@
                     setTimeout(callback, 300);
                 }
             }, 30);
+        }
+
+        function scrollToProjects() {
+            // 1. Ensure space mode is active
+            if (!isSpaceModeActive) {
+                document.getElementById('skip-button').click();
+            }
+
+            // 2. Force the zoom state so the canvas renders
+            if (!isZooming) {
+                isZooming = true;
+                if (!scrollTargetStar && reverseSpace && reverseSpace.stars.length > 0) {
+                    scrollTargetStar = reverseSpace.stars[Math.floor(Math.random() * reverseSpace.stars.length)];
+                }
+            }
+
+            // We set a timeline target that allows the alien to trigger (300+)
+            // but the real stop condition is alienFlightProgress
+            const targetTimeline = 600;
+            const speed = 1;
+
+            function animate() {
+                // Step through the visual phases
+                if (scrollZoom < MAX_ZOOM) {
+                    scrollZoom += 0.2;
+                } else if (eclipseFactor < MAX_ECLIPSE_FACTOR) {
+                    eclipseFactor *= 1.2;
+                } else if (introProgress < 100) {
+                    introProgress += 5;
+                } else if (timeline < targetTimeline) {
+                    timeline += speed;
+                }
+
+                updateTimelineVisuals();
+
+                // CONDITION: Stop only when the alien flight (t) is fully complete (1)
+                // We check alienFlightProgress which is updated in updateAlienState()
+                if (alienFlightProgress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Snap to exactly 1 and finish
+                    alienFlightProgress = 1;
+                    updateTimelineVisuals();
+                }
+            }
+
+            animate();
+        }
+
+        function initInterruptibleScroll() {
+            let isAutoScrolling = true;
+            let autoScrollRequest;
+
+            // Ensure the engine knows we are zooming and has a target
+            if (!isZooming) {
+                isZooming = true;
+                if (!scrollTargetStar && reverseSpace && reverseSpace.stars.length > 0) {
+                    scrollTargetStar = reverseSpace.stars[0];
+                }
+            }
+
+            const autoStep = () => {
+                if (!isAutoScrolling) return;
+
+                // Sequence through the initial phases into the infinite timeline
+                if (scrollZoom < MAX_ZOOM) {
+                    scrollZoom += 0.015; // Cinematic zoom speed
+                } else if (eclipseFactor < MAX_ECLIPSE_FACTOR) {
+                    eclipseFactor *= 1.05;
+                } else if (introProgress < 100) {
+                    introProgress += 0.5;
+                } else {
+                    timeline += 0.5; // Constant forward motion
+                }
+
+                updateTimelineVisuals();
+                autoScrollRequest = requestAnimationFrame(autoStep);
+            };
+
+            const stopScroll = () => {
+                if (isAutoScrolling) {
+                    isAutoScrolling = false;
+                    cancelAnimationFrame(autoScrollRequest);
+
+                    // Remove listeners so they don't linger
+                    ['mousedown', 'mousemove', 'wheel', 'keydown', 'touchstart'].forEach(event => {
+                        window.removeEventListener(event, stopScroll);
+                    });
+                }
+            };
+
+            // Attach "one-time" listeners to stop on any interaction
+            ['mousedown', 'mousemove', 'wheel', 'keydown', 'touchstart'].forEach(event => {
+                window.addEventListener(event, stopScroll, { once: true, passive: true });
+            });
+
+            autoScrollRequest = requestAnimationFrame(autoStep);
         }
     </script>
 

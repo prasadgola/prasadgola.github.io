@@ -131,7 +131,10 @@
 								<li class="d-flex"><span>Address :</span> <span>Plano, Texas, United States of
 										America</span></li>
 								<li class="d-flex"><span>Zip code :</span> <span>75074</span></li>
-								<li class="d-flex"><span>Email :</span> <span>basavaprasadgolacs@gmail.com</span></li>
+								<li class="d-flex"><span>Email :</span> <span><a href="/cdn-cgi/l/email-protection"
+											class="__cf_email__"
+											data-cfemail="d3b1b2a0b2a5b2a3a1b2a0b2b7b4bcbfb2b0a093b4beb2babffdb0bcbe">[email&#160;protected]</a></span>
+								</li>
 								<li class="d-flex"><span>Phone : </span> <span>+1 (682) 266 - 3588</span></li>
 								<li class="d-flex"><span>Date of birth : </span> <span>July - 14th - 1998</span></li>
 							</ul>
@@ -704,8 +707,10 @@
 										Dallas, Texas, USA</span></li <li><a href="#"><span
 										class="icon icon-phone"></span><span class="text"> &emsp; +1 682 266
 										3588</span></a></li>
-								<li><a href="#"><span class="icon icon-envelope"></span><span
-											class="text">basavaprasadgolacs@gmail.com</span></a></li>
+								<li><a href="#"><span class="icon icon-envelope"></span><span class="text"><span
+												class="__cf_email__"
+												data-cfemail="86e4e7f5e7f0e7f6f4e7f5e7e2e1e9eae7e5f5c6e1ebe7efeaa8e5e9eb">[email&#160;protected]</span></span></a>
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -716,6 +721,8 @@
 
 					<p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 						Copyright &copy;
+						<script data-cfasync="false"
+							src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 						<script>document.write(new Date().getFullYear());</script> All rights reserved <i
 							class="icon-heart color-danger" aria-hidden="true"></i> <a href="https://colorlib.com"
 							target="_blank"></a>
@@ -767,47 +774,71 @@
 					<p>Ask me about my projects, skills, or experience.</p>
 				</div>
 			</div>
+
+			<div id="voice-visualizer" class="voice-visualizer hidden">
+				<div class="voice-viz-label" id="voice-viz-label">Listening...</div>
+				<div class="voice-bars" id="voice-bars">
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+				</div>
+			</div>
+
 			<div class="chat-input-area">
 				<input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+				<button id="mic-btn" title="Voice chat">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+						fill="currentColor">
+						<path
+							d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm-1 1.93V18H9v2h6v-2h-2v-2.07A5 5 0 0 0 17 11h-2a3 3 0 0 1-6 0H7a5 5 0 0 0 4 4.93z" />
+					</svg>
+				</button>
 				<button id="send-btn">Send</button>
 			</div>
 		</div>
 	</div>
 
 	<style>
-		/* Main Container */
 		.chat-widget {
 			position: fixed;
 			bottom: 0;
 			right: 20px;
-			width: 320px;
+			width: 340px;
 			background-color: white;
-			box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+			box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15);
 			border-radius: 10px 10px 0 0;
 			z-index: 9999;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 			display: flex;
 			flex-direction: column;
-
-			/* Animation properties */
-			transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-			height: 450px;
-			/* Full height when open */
-			transform: translateY(0);
-			/* Default open state position */
+			transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			height: 480px;
 		}
 
-		/* Collapsed State (Slid down) */
 		.chat-widget.collapsed {
 			transform: translateY(calc(100% - 50px));
-			/* Slide down leaving only header (50px) visible */
 		}
 
-		/* Header / Tab */
 		.chat-header {
 			height: 50px;
 			background-color: #ffc107;
-			/* Primary Color */
 			color: white;
 			display: flex;
 			align-items: center;
@@ -820,7 +851,7 @@
 		}
 
 		.chat-header:hover {
-			background-color: #000000;
+			background-color: #000;
 		}
 
 		.header-title {
@@ -835,40 +866,35 @@
 			height: 10px;
 			width: 10px;
 			background-color: #2ecc71;
-			/* Green online dot */
 			border-radius: 50%;
 			display: inline-block;
 			border: 1px solid white;
 		}
 
-		/* Chat Body */
 		.chat-body {
 			flex: 1;
 			display: flex;
 			flex-direction: column;
 			overflow: hidden;
-			/* Contains messages inside the box */
-			background-color: white;
+			background: #fff;
 		}
 
-		/* Messages Area */
 		.chat-messages {
 			flex: 1;
 			padding: 15px;
 			overflow-y: auto;
-			background-color: black;
+			background: #000;
 			display: flex;
 			flex-direction: column;
 			gap: 12px;
 		}
 
-		/* Scrollbar Styling */
 		.chat-messages::-webkit-scrollbar {
 			width: 6px;
 		}
 
 		.chat-messages::-webkit-scrollbar-thumb {
-			background-color: #ccc;
+			background: #ccc;
 			border-radius: 4px;
 		}
 
@@ -878,19 +904,18 @@
 			border-radius: 18px;
 			font-size: 14px;
 			line-height: 1.4;
-			position: relative;
 		}
 
 		.user-message {
 			align-self: flex-end;
-			background-color: #007bff;
+			background: #007bff;
 			color: white;
 			border-bottom-right-radius: 4px;
 		}
 
 		.bot-message {
 			align-self: flex-start;
-			background-color: #e9ecef;
+			background: #e9ecef;
 			color: #333;
 			border-bottom-left-radius: 4px;
 			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -901,7 +926,7 @@
 			font-size: 13px;
 			color: #6c757d;
 			margin: 10px 0;
-			background-color: rgba(0, 0, 0, 0.03);
+			background: rgba(0, 0, 0, 0.03);
 			padding: 10px;
 			border-radius: 8px;
 		}
@@ -910,13 +935,61 @@
 			margin: 0;
 		}
 
-		/* Input Area */
-		.chat-input-area {
-			padding: 12px;
-			border-top: 1px solid #eee;
+		/* ── Voice Visualizer ── */
+		.voice-visualizer {
+			background: #0d0d0d;
+			padding: 8px 14px 6px;
 			display: flex;
-			gap: 8px;
-			background-color: black;
+			flex-direction: column;
+			align-items: center;
+			gap: 5px;
+			border-top: 1px solid #1a1a1a;
+		}
+
+		.voice-visualizer.hidden {
+			display: none;
+		}
+
+		.voice-viz-label {
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 1.5px;
+			text-transform: uppercase;
+			color: #555;
+			transition: color 0.3s;
+		}
+
+		.voice-viz-label.listening-label {
+			color: #4ade80;
+		}
+
+		.voice-viz-label.speaking-label {
+			color: #fbbf24;
+		}
+
+		.voice-bars {
+			display: flex;
+			align-items: center;
+			gap: 3px;
+			height: 32px;
+		}
+
+		.bar {
+			width: 4px;
+			border-radius: 3px;
+			background: #333;
+			height: 3px;
+			transition: background 0.2s;
+		}
+
+		/* Input */
+		.chat-input-area {
+			padding: 10px 12px;
+			border-top: 1px solid #1a1a1a;
+			display: flex;
+			gap: 6px;
+			background: #000;
+			align-items: center;
 		}
 
 		#chat-input {
@@ -934,19 +1007,69 @@
 		}
 
 		#send-btn {
-			background-color: #007bff;
+			background: #007bff;
 			color: white;
 			border: none;
-			padding: 8px 16px;
+			padding: 8px 14px;
 			border-radius: 20px;
 			cursor: pointer;
 			font-weight: 600;
 			font-size: 13px;
-			transition: background-color 0.2s;
+			transition: background 0.2s;
+			white-space: nowrap;
 		}
 
 		#send-btn:hover {
-			background-color: #0056b3;
+			background: #0056b3;
+		}
+
+		#mic-btn {
+			background: #1f1f1f;
+			color: #aaa;
+			border: none;
+			padding: 8px 10px;
+			border-radius: 20px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: background 0.2s, box-shadow 0.2s;
+			flex-shrink: 0;
+		}
+
+		#mic-btn:hover {
+			background: #333;
+			color: #fff;
+		}
+
+		#mic-btn.connecting {
+			background: #4f46e5;
+			color: white;
+		}
+
+		#mic-btn.listening {
+			background: #16a34a;
+			color: white;
+			animation: mic-pulse 1s ease-in-out infinite;
+		}
+
+		#mic-btn.speaking {
+			background: #d97706;
+			color: white;
+		}
+
+		@keyframes mic-pulse {
+
+			0%,
+			100% {
+				transform: scale(1);
+				box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+			}
+
+			50% {
+				transform: scale(1.1);
+				box-shadow: 0 0 0 7px rgba(22, 163, 74, 0);
+			}
 		}
 
 		#toggle-icon {
@@ -963,12 +1086,15 @@
 			const sendBtn = document.getElementById('send-btn');
 			const chatInput = document.getElementById('chat-input');
 			const messagesDiv = document.getElementById('chat-messages');
+			const micBtn = document.getElementById('mic-btn');
+			const vizPanel = document.getElementById('voice-visualizer');
+			const vizLabel = document.getElementById('voice-viz-label');
+			const bars = Array.from(document.querySelectorAll('.bar'));
 
-			// 1. Toggle Open/Close Logic
+			// ── Toggle ──────────────────────────────────────────────────
 			header.addEventListener('click', () => {
-				const isCollapsed = widget.classList.contains('collapsed');
-
-				if (isCollapsed) {
+				const collapsed = widget.classList.contains('collapsed');
+				if (collapsed) {
 					widget.classList.remove('collapsed');
 					icon.innerText = '▼';
 					setTimeout(() => chatInput.focus(), 300);
@@ -978,69 +1104,286 @@
 				}
 			});
 
-			// 2. Send Message Logic
+			// ── Text Chat ────────────────────────────────────────────────
 			function sendMessage() {
 				const text = chatInput.value.trim();
 				if (!text) return;
-
-				// UI: Show User Message
 				appendMessage('user', text);
 				chatInput.value = '';
-
-				// Backend: Send Request
 				fetch('https://basavaprasad-digital-twin-882178443942.us-central1.run.app/chat', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ message: text }) // CHANGED: "text" -> "message"
+					body: JSON.stringify({ message: text })
 				})
-					.then(response => response.json())
+					.then(r => r.json())
 					.then(data => {
-						console.log("Response:", data);
-
-						// === SMART JSON PARSING ===
-						let replyText = "Error: No text in response.";
-
-						if (typeof data === 'string') {
-							replyText = data;
-						} else if (data.response) {
-							replyText = data.response;
-						} else if (data.message) {
-							replyText = data.message;
-						} else if (data.text) {
-							replyText = data.text;
-						} else if (data.answer) {
-							replyText = data.answer;
-						} else {
-							replyText = JSON.stringify(data);
-						}
-
-						appendMessage('bot', replyText);
+						let reply = data.response || data.message || data.text || data.answer
+							|| (typeof data === 'string' ? data : JSON.stringify(data));
+						appendMessage('bot', reply);
 					})
-					.catch(error => {
-						console.error('Error:', error);
-						appendMessage('bot', 'Error connecting to server. Please try again later.');
-					});
+					.catch(() => appendMessage('bot', 'Error connecting to server.'));
 			}
 
-			// 3. Helper to add messages
 			function appendMessage(sender, text) {
-				const msgDiv = document.createElement('div');
-				msgDiv.classList.add('message-bubble');
-				msgDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-				msgDiv.textContent = text;
-				messagesDiv.appendChild(msgDiv);
+				const d = document.createElement('div');
+				d.classList.add('message-bubble', sender === 'user' ? 'user-message' : 'bot-message');
+				d.textContent = text;
+				messagesDiv.appendChild(d);
 				messagesDiv.scrollTop = messagesDiv.scrollHeight;
 			}
 
-			// 4. Event Listeners
 			sendBtn.addEventListener('click', sendMessage);
+			chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
 
-			chatInput.addEventListener('keypress', (e) => {
-				if (e.key === 'Enter') sendMessage();
-			});
+			// ── Voice Chat ───────────────────────────────────────────────
+			const WS_URL = 'wss://basavaprasad-digital-twin-882178443942.us-central1.run.app/voice';
 
-			document.querySelector('.chat-body').addEventListener('click', (e) => {
-				e.stopPropagation();
+			let voiceState = 'idle';
+			let voiceWs = null;
+			let micStream = null;
+			let micCtx = null;   // 16kHz AudioContext for mic capture
+			let playCtx = null;   // 24kHz AudioContext for playback
+			let analyser = null;
+			let micSource = null;
+			let processor = null;
+			let audioQueue = [];
+			let isPlaying = false;
+			let isSending = false;
+			let isRunning = false;
+			let nextPlayTime = 0;
+			let vizRafId = null;
+			let idleRafId = null;
+
+			// ── Bar animation ────────────────────────────────────────────
+			function stopVizLoop() {
+				if (vizRafId) { cancelAnimationFrame(vizRafId); vizRafId = null; }
+				if (idleRafId) { cancelAnimationFrame(idleRafId); idleRafId = null; }
+				bars.forEach(b => { b.style.height = '3px'; b.style.background = '#333'; });
+			}
+
+			function startListeningViz() {
+				stopVizLoop();
+				const freq = new Uint8Array(analyser ? analyser.frequencyBinCount : 64);
+				function frame() {
+					vizRafId = requestAnimationFrame(frame);
+					if (analyser) analyser.getByteFrequencyData(freq);
+					bars.forEach((b, i) => {
+						const bin = analyser ? Math.floor(i * analyser.frequencyBinCount / bars.length) : i;
+						const val = analyser ? freq[bin] : 0;
+						const h = Math.max(3, (val / 255) * 28);
+						b.style.height = h + 'px';
+						b.style.background = `hsl(${130 + i * 2}, 70%, ${40 + val / 8}%)`;
+					});
+				}
+				frame();
+			}
+
+			function startSpeakingViz() {
+				stopVizLoop();
+				let t = 0;
+				function frame() {
+					vizRafId = requestAnimationFrame(frame);
+					t += 0.07;
+					bars.forEach((b, i) => {
+						const h = Math.max(3, 14 + 12 * Math.sin(t + i * 0.5));
+						b.style.height = h + 'px';
+						b.style.background = `hsl(${38 + i * 1.5}, 90%, 55%)`;
+					});
+				}
+				frame();
+			}
+
+			function startIdleViz() {
+				stopVizLoop();
+				let t = 0;
+				function frame() {
+					idleRafId = requestAnimationFrame(frame);
+					t += 0.015;
+					bars.forEach((b, i) => {
+						const h = Math.max(3, 3 + 2 * Math.sin(t + i * 0.8));
+						b.style.height = h + 'px';
+						b.style.background = '#2a2a2a';
+					});
+				}
+				frame();
+			}
+
+			// ── State management ─────────────────────────────────────────
+			function setVoiceState(s) {
+				voiceState = s;
+				micBtn.className = '';
+				vizLabel.className = 'voice-viz-label';
+
+				if (s === 'idle') {
+					micBtn.title = 'Start voice chat';
+					vizPanel.classList.add('hidden');
+					stopVizLoop();
+				} else {
+					vizPanel.classList.remove('hidden');
+					if (s === 'connecting') {
+						micBtn.classList.add('connecting');
+						micBtn.title = 'Connecting...';
+						vizLabel.textContent = 'Connecting...';
+						startIdleViz();
+					} else if (s === 'listening') {
+						micBtn.classList.add('listening');
+						micBtn.title = 'Listening — tap to stop';
+						vizLabel.textContent = 'Listening...';
+						vizLabel.classList.add('listening-label');
+						startListeningViz();
+					} else if (s === 'speaking') {
+						micBtn.classList.add('speaking');
+						micBtn.title = 'AI speaking...';
+						vizLabel.textContent = 'Speaking...';
+						vizLabel.classList.add('speaking-label');
+						startSpeakingViz();
+					}
+				}
+			}
+
+			// ── PCM helpers ──────────────────────────────────────────────
+			function float32ToInt16(f32) {
+				const i16 = new Int16Array(f32.length);
+				for (let i = 0; i < f32.length; i++) {
+					const s = Math.max(-1, Math.min(1, f32[i]));
+					i16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+				}
+				return i16.buffer;
+			}
+
+			// ── Gapless playback via scheduled AudioBuffers ───────────────
+			function schedulePlayback(arrayBuffer) {
+				if (!playCtx) return;
+				const i16 = new Int16Array(arrayBuffer);
+				const f32 = new Float32Array(i16.length);
+				for (let i = 0; i < i16.length; i++) f32[i] = i16[i] / 32768.0;
+
+				const buf = playCtx.createBuffer(1, f32.length, 24000);
+				buf.copyToChannel(f32, 0);
+				const src = playCtx.createBufferSource();
+				src.buffer = buf;
+				src.connect(playCtx.destination);
+
+				const now = playCtx.currentTime;
+				const startAt = Math.max(now, nextPlayTime);
+				src.start(startAt);
+				nextPlayTime = startAt + buf.duration;
+			}
+
+			function drainQueue() {
+				while (audioQueue.length > 0) {
+					schedulePlayback(audioQueue.shift());
+				}
+				isPlaying = false;
+			}
+
+			// ── WebSocket voice connection ────────────────────────────────
+			function connectWS() {
+				if (!isRunning) return;
+				isSending = false;
+				const ws = new WebSocket(WS_URL);
+				ws.binaryType = 'arraybuffer';
+				voiceWs = ws;
+
+				ws.onopen = () => {
+					voiceWs = ws;
+					isSending = true;
+					setVoiceState('listening');
+				};
+
+				ws.onmessage = evt => {
+					if (typeof evt.data === 'string') {
+						console.log('[voice]', evt.data);
+						if (evt.data.includes('turn_complete')) {
+							isSending = false;
+							voiceWs = null;
+							try { ws.close(1000, 'turn done'); } catch (_) { }
+							// Drain remaining queued audio, then reconnect
+							drainQueue();
+							const waitMs = Math.max(300, (nextPlayTime - (playCtx ? playCtx.currentTime : 0)) * 1000 + 200);
+							setTimeout(() => { if (isRunning) connectWS(); }, waitMs);
+						}
+					} else {
+						// Binary PCM chunk from server (24kHz, 16-bit mono)
+						isSending = false;
+						setVoiceState('speaking');
+						schedulePlayback(evt.data);
+					}
+				};
+
+				ws.onerror = e => console.warn('[voice] ws error', e);
+
+				ws.onclose = () => {
+					if (voiceWs === ws) voiceWs = null;
+					// Only auto-reconnect if we weren't the ones who triggered turn_complete flow
+					if (isRunning && voiceState !== 'speaking' && voiceState !== 'idle') {
+						setTimeout(() => {
+							if (isRunning) { setVoiceState('connecting'); connectWS(); }
+						}, 1500);
+					}
+				};
+			}
+
+			// ── Start voice session ───────────────────────────────────────
+			async function startVoice() {
+				try {
+					micStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1 } });
+				} catch (e) {
+					alert('Microphone access denied. Please allow mic and try again.');
+					return;
+				}
+
+				// Mic processing context at 16kHz
+				micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+				// Playback context at 24kHz
+				playCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
+				nextPlayTime = 0;
+
+				// Analyser for visualizer
+				analyser = micCtx.createAnalyser();
+				analyser.fftSize = 128;
+
+				micSource = micCtx.createMediaStreamSource(micStream);
+				micSource.connect(analyser);
+
+				// ScriptProcessor for sending audio (widely supported fallback)
+				processor = micCtx.createScriptProcessor(4096, 1, 1);
+				processor.onaudioprocess = e => {
+					if (!isSending || !voiceWs || voiceWs.readyState !== WebSocket.OPEN) return;
+					const f32 = e.inputBuffer.getChannelData(0);
+					voiceWs.send(float32ToInt16(f32));
+				};
+				analyser.connect(processor);
+				processor.connect(micCtx.destination); // required to fire onaudioprocess
+
+				isRunning = true;
+				setVoiceState('connecting');
+				connectWS();
+			}
+
+			// ── Stop voice session ────────────────────────────────────────
+			function stopVoice() {
+				isRunning = false;
+				isSending = false;
+				audioQueue = [];
+				isPlaying = false;
+				nextPlayTime = 0;
+
+				try { processor && processor.disconnect(); } catch (_) { }
+				try { analyser && analyser.disconnect(); } catch (_) { }
+				try { micSource && micSource.disconnect(); } catch (_) { }
+				processor = analyser = micSource = null;
+
+				if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+				if (micCtx) { micCtx.close().catch(() => { }); micCtx = null; }
+				if (playCtx) { playCtx.close().catch(() => { }); playCtx = null; }
+				if (voiceWs) { try { voiceWs.close(1000, 'session ended'); } catch (_) { } voiceWs = null; }
+
+				setVoiceState('idle');
+			}
+
+			micBtn.addEventListener('click', () => {
+				if (voiceState === 'idle') startVoice(); else stopVoice();
 			});
 		});
 	</script>

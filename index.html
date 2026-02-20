@@ -133,7 +133,7 @@
 								<li class="d-flex"><span>Zip code :</span> <span>75074</span></li>
 								<li class="d-flex"><span>Email :</span> <span><a href="/cdn-cgi/l/email-protection"
 											class="__cf_email__"
-											data-cfemail="d3b1b2a0b2a5b2a3a1b2a0b2b7b4bcbfb2b0a093b4beb2babffdb0bcbe">[email&#160;protected]</a></span>
+											data-cfemail="dab8bba9bbacbbaaa8bba9bbbebdb5b6bbb9a99abdb7bbb3b6f4b9b5b7">[email&#160;protected]</a></span>
 								</li>
 								<li class="d-flex"><span>Phone : </span> <span>+1 (682) 266 - 3588</span></li>
 								<li class="d-flex"><span>Date of birth : </span> <span>July - 14th - 1998</span></li>
@@ -709,7 +709,7 @@
 										3588</span></a></li>
 								<li><a href="#"><span class="icon icon-envelope"></span><span class="text"><span
 												class="__cf_email__"
-												data-cfemail="86e4e7f5e7f0e7f6f4e7f5e7e2e1e9eae7e5f5c6e1ebe7efeaa8e5e9eb">[email&#160;protected]</span></span></a>
+												data-cfemail="2d4f4c5e4c5b4c5d5f4c5e4c494a42414c4e5e6d4a404c4441034e4240">[email&#160;protected]</span></span></a>
 								</li>
 							</ul>
 						</div>
@@ -758,10 +758,12 @@
 
 	<script src="js/main.js"></script>
 
+
 	<div id="chat-widget" class="chat-widget collapsed">
 		<div class="chat-header" id="chat-header-toggle">
 			<div class="header-title">
-				<span class="status-dot"></span>
+				<img src="images/My-project-1.png" class="header-avatar" alt="Prasad"
+					onerror="this.src='images/My-project-1.jpg'">
 				<span>Chat with Prasad</span>
 			</div>
 			<span id="toggle-icon">▲</span>
@@ -830,6 +832,7 @@
 			flex-direction: column;
 			transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 			height: 480px;
+			transform: translateY(0);
 		}
 
 		.chat-widget.collapsed {
@@ -839,7 +842,7 @@
 		.chat-header {
 			height: 50px;
 			background-color: #ffc107;
-			color: white;
+			color: black;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
@@ -852,6 +855,7 @@
 
 		.chat-header:hover {
 			background-color: #000;
+			color: white;
 		}
 
 		.header-title {
@@ -862,13 +866,10 @@
 			font-size: 15px;
 		}
 
-		.status-dot {
-			height: 10px;
-			width: 10px;
-			background-color: #2ecc71;
-			border-radius: 50%;
-			display: inline-block;
-			border: 1px solid white;
+		.header-avatar {
+			height: 34px;
+			object-fit: cover;
+			flex-shrink: 0;
 		}
 
 		.chat-body {
@@ -935,7 +936,6 @@
 			margin: 0;
 		}
 
-		/* ── Voice Visualizer ── */
 		.voice-visualizer {
 			background: #0d0d0d;
 			padding: 8px 14px 6px;
@@ -982,7 +982,6 @@
 			transition: background 0.2s;
 		}
 
-		/* Input */
 		.chat-input-area {
 			padding: 10px 12px;
 			border-top: 1px solid #1a1a1a;
@@ -1033,7 +1032,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			transition: background 0.2s, box-shadow 0.2s;
+			transition: background 0.2s;
 			flex-shrink: 0;
 		}
 
@@ -1101,6 +1100,7 @@
 				} else {
 					widget.classList.add('collapsed');
 					icon.innerText = '▲';
+					if (voiceState !== 'idle') stopVoice();
 				}
 			});
 
@@ -1141,12 +1141,11 @@
 			let voiceState = 'idle';
 			let voiceWs = null;
 			let micStream = null;
-			let micCtx = null;   // 16kHz AudioContext for mic capture
-			let playCtx = null;   // 24kHz AudioContext for playback
+			let micCtx = null;
+			let playCtx = null;
 			let analyser = null;
 			let micSource = null;
 			let processor = null;
-			let audioQueue = [];
 			let isPlaying = false;
 			let isSending = false;
 			let isRunning = false;
@@ -1154,7 +1153,6 @@
 			let vizRafId = null;
 			let idleRafId = null;
 
-			// ── Bar animation ────────────────────────────────────────────
 			function stopVizLoop() {
 				if (vizRafId) { cancelAnimationFrame(vizRafId); vizRafId = null; }
 				if (idleRafId) { cancelAnimationFrame(idleRafId); idleRafId = null; }
@@ -1172,7 +1170,7 @@
 						const val = analyser ? freq[bin] : 0;
 						const h = Math.max(3, (val / 255) * 28);
 						b.style.height = h + 'px';
-						b.style.background = `hsl(${130 + i * 2}, 70%, ${40 + val / 8}%)`;
+						b.style.background = 'hsl(' + (130 + i * 2) + ', 70%, ' + (40 + val / 8) + '%)';
 					});
 				}
 				frame();
@@ -1187,7 +1185,7 @@
 					bars.forEach((b, i) => {
 						const h = Math.max(3, 14 + 12 * Math.sin(t + i * 0.5));
 						b.style.height = h + 'px';
-						b.style.background = `hsl(${38 + i * 1.5}, 90%, 55%)`;
+						b.style.background = 'hsl(' + (38 + i * 1.5) + ', 90%, 55%)';
 					});
 				}
 				frame();
@@ -1208,12 +1206,10 @@
 				frame();
 			}
 
-			// ── State management ─────────────────────────────────────────
 			function setVoiceState(s) {
 				voiceState = s;
 				micBtn.className = '';
 				vizLabel.className = 'voice-viz-label';
-
 				if (s === 'idle') {
 					micBtn.title = 'Start voice chat';
 					vizPanel.classList.add('hidden');
@@ -1241,7 +1237,6 @@
 				}
 			}
 
-			// ── PCM helpers ──────────────────────────────────────────────
 			function float32ToInt16(f32) {
 				const i16 = new Int16Array(f32.length);
 				for (let i = 0; i < f32.length; i++) {
@@ -1251,33 +1246,22 @@
 				return i16.buffer;
 			}
 
-			// ── Gapless playback via scheduled AudioBuffers ───────────────
 			function schedulePlayback(arrayBuffer) {
 				if (!playCtx) return;
 				const i16 = new Int16Array(arrayBuffer);
 				const f32 = new Float32Array(i16.length);
 				for (let i = 0; i < i16.length; i++) f32[i] = i16[i] / 32768.0;
-
 				const buf = playCtx.createBuffer(1, f32.length, 24000);
 				buf.copyToChannel(f32, 0);
 				const src = playCtx.createBufferSource();
 				src.buffer = buf;
 				src.connect(playCtx.destination);
-
 				const now = playCtx.currentTime;
 				const startAt = Math.max(now, nextPlayTime);
 				src.start(startAt);
 				nextPlayTime = startAt + buf.duration;
 			}
 
-			function drainQueue() {
-				while (audioQueue.length > 0) {
-					schedulePlayback(audioQueue.shift());
-				}
-				isPlaying = false;
-			}
-
-			// ── WebSocket voice connection ────────────────────────────────
 			function connectWS() {
 				if (!isRunning) return;
 				isSending = false;
@@ -1293,18 +1277,14 @@
 
 				ws.onmessage = evt => {
 					if (typeof evt.data === 'string') {
-						console.log('[voice]', evt.data);
 						if (evt.data.includes('turn_complete')) {
 							isSending = false;
 							voiceWs = null;
 							try { ws.close(1000, 'turn done'); } catch (_) { }
-							// Drain remaining queued audio, then reconnect
-							drainQueue();
 							const waitMs = Math.max(300, (nextPlayTime - (playCtx ? playCtx.currentTime : 0)) * 1000 + 200);
 							setTimeout(() => { if (isRunning) connectWS(); }, waitMs);
 						}
 					} else {
-						// Binary PCM chunk from server (24kHz, 16-bit mono)
 						isSending = false;
 						setVoiceState('speaking');
 						schedulePlayback(evt.data);
@@ -1315,7 +1295,6 @@
 
 				ws.onclose = () => {
 					if (voiceWs === ws) voiceWs = null;
-					// Only auto-reconnect if we weren't the ones who triggered turn_complete flow
 					if (isRunning && voiceState !== 'speaking' && voiceState !== 'idle') {
 						setTimeout(() => {
 							if (isRunning) { setVoiceState('connecting'); connectWS(); }
@@ -1324,7 +1303,6 @@
 				};
 			}
 
-			// ── Start voice session ───────────────────────────────────────
 			async function startVoice() {
 				try {
 					micStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1 } });
@@ -1332,53 +1310,41 @@
 					alert('Microphone access denied. Please allow mic and try again.');
 					return;
 				}
-
-				// Mic processing context at 16kHz
 				micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-				// Playback context at 24kHz
 				playCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
 				nextPlayTime = 0;
 
-				// Analyser for visualizer
 				analyser = micCtx.createAnalyser();
 				analyser.fftSize = 128;
-
 				micSource = micCtx.createMediaStreamSource(micStream);
 				micSource.connect(analyser);
 
-				// ScriptProcessor for sending audio (widely supported fallback)
 				processor = micCtx.createScriptProcessor(4096, 1, 1);
 				processor.onaudioprocess = e => {
 					if (!isSending || !voiceWs || voiceWs.readyState !== WebSocket.OPEN) return;
-					const f32 = e.inputBuffer.getChannelData(0);
-					voiceWs.send(float32ToInt16(f32));
+					voiceWs.send(float32ToInt16(e.inputBuffer.getChannelData(0)));
 				};
 				analyser.connect(processor);
-				processor.connect(micCtx.destination); // required to fire onaudioprocess
+				processor.connect(micCtx.destination);
 
 				isRunning = true;
 				setVoiceState('connecting');
 				connectWS();
 			}
 
-			// ── Stop voice session ────────────────────────────────────────
 			function stopVoice() {
 				isRunning = false;
 				isSending = false;
-				audioQueue = [];
 				isPlaying = false;
 				nextPlayTime = 0;
-
 				try { processor && processor.disconnect(); } catch (_) { }
 				try { analyser && analyser.disconnect(); } catch (_) { }
 				try { micSource && micSource.disconnect(); } catch (_) { }
 				processor = analyser = micSource = null;
-
 				if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
 				if (micCtx) { micCtx.close().catch(() => { }); micCtx = null; }
 				if (playCtx) { playCtx.close().catch(() => { }); playCtx = null; }
 				if (voiceWs) { try { voiceWs.close(1000, 'session ended'); } catch (_) { } voiceWs = null; }
-
 				setVoiceState('idle');
 			}
 

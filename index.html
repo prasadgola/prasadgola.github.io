@@ -131,10 +131,7 @@
 								<li class="d-flex"><span>Address :</span> <span>Plano, Texas, United States of
 										America</span></li>
 								<li class="d-flex"><span>Zip code :</span> <span>75074</span></li>
-								<li class="d-flex"><span>Email :</span> <span><a href="/cdn-cgi/l/email-protection"
-											class="__cf_email__"
-											data-cfemail="dab8bba9bbacbbaaa8bba9bbbebdb5b6bbb9a99abdb7bbb3b6f4b9b5b7">[email&#160;protected]</a></span>
-								</li>
+								<li class="d-flex"><span>Email :</span> <span>basavaprasadgolacs@gmail.com</span></li>
 								<li class="d-flex"><span>Phone : </span> <span>+1 (682) 266 - 3588</span></li>
 								<li class="d-flex"><span>Date of birth : </span> <span>July - 14th - 1998</span></li>
 							</ul>
@@ -707,10 +704,8 @@
 										Dallas, Texas, USA</span></li <li><a href="#"><span
 										class="icon icon-phone"></span><span class="text"> &emsp; +1 682 266
 										3588</span></a></li>
-								<li><a href="#"><span class="icon icon-envelope"></span><span class="text"><span
-												class="__cf_email__"
-												data-cfemail="2d4f4c5e4c5b4c5d5f4c5e4c494a42414c4e5e6d4a404c4441034e4240">[email&#160;protected]</span></span></a>
-								</li>
+								<li><a href="#"><span class="icon icon-envelope"></span><span
+											class="text">basavaprasadgolacs@gmail.com</span></a></li>
 							</ul>
 						</div>
 					</div>
@@ -721,8 +716,6 @@
 
 					<p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 						Copyright &copy;
-						<script data-cfasync="false"
-							src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 						<script>document.write(new Date().getFullYear());</script> All rights reserved <i
 							class="icon-heart color-danger" aria-hidden="true"></i> <a href="https://colorlib.com"
 							target="_blank"></a>
@@ -764,7 +757,7 @@
 			<div class="header-title">
 				<img src="images/My-project-1.png" class="header-avatar" alt="Prasad"
 					onerror="this.src='images/My-project-1.jpg'">
-				<span>Chat with Prasad</span>
+				<span>chat with basavaprasad</span>
 			</div>
 			<span id="toggle-icon">▲</span>
 		</div>
@@ -821,28 +814,31 @@
 		.chat-widget {
 			position: fixed;
 			bottom: 0;
-			right: 20px;
+			right: 200px;
 			width: 340px;
-			background-color: white;
-			box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.15);
+			border: 1.5px solid black;
+			/* background-color: white; */
+			/* box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.50); */
 			border-radius: 10px 10px 0 0;
 			z-index: 9999;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 			display: flex;
 			flex-direction: column;
 			transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-			height: 480px;
+			height: 580px;
 			transform: translateY(0);
 		}
 
 		.chat-widget.collapsed {
-			transform: translateY(calc(100% - 50px));
+			transform: translateY(calc(100% - 40px));
+
 		}
 
 		.chat-header {
-			height: 50px;
-			background-color: #ffc107;
-			color: black;
+			height: 40px;
+			/* background-color: #ffc107; */
+			color: white;
+			border: 1.5px solid black;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
@@ -854,8 +850,8 @@
 		}
 
 		.chat-header:hover {
-			background-color: #000;
-			color: white;
+			/* background-color: #000; */
+			border: 1.5px solid #ffffff;
 		}
 
 		.header-title {
@@ -877,14 +873,14 @@
 			display: flex;
 			flex-direction: column;
 			overflow: hidden;
-			background: #fff;
+			/* background: #000000; */
 		}
 
 		.chat-messages {
 			flex: 1;
 			padding: 15px;
 			overflow-y: auto;
-			background: #000;
+			/* background: #000; */
 			display: flex;
 			flex-direction: column;
 			gap: 12px;
@@ -895,7 +891,7 @@
 		}
 
 		.chat-messages::-webkit-scrollbar-thumb {
-			background: #ccc;
+			/* background: #ccc; */
 			border-radius: 4px;
 		}
 
@@ -909,15 +905,15 @@
 
 		.user-message {
 			align-self: flex-end;
-			background: #007bff;
+			border: 1.5px solid #ffffff;
 			color: white;
 			border-bottom-right-radius: 4px;
 		}
 
 		.bot-message {
 			align-self: flex-start;
-			background: #e9ecef;
-			color: #333;
+			border: 1.5px solid #ffffff;
+			color: white;
 			border-bottom-left-radius: 4px;
 			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 		}
@@ -925,9 +921,9 @@
 		.message-system {
 			text-align: center;
 			font-size: 13px;
-			color: #6c757d;
+			color: #a5a6a7;
 			margin: 10px 0;
-			background: rgba(0, 0, 0, 0.03);
+			/* background: rgba(0, 0, 0, 0.03); */
 			padding: 10px;
 			border-radius: 8px;
 		}
@@ -937,7 +933,7 @@
 		}
 
 		.voice-visualizer {
-			background: #0d0d0d;
+			/* background: #0d0d0d; */
 			padding: 8px 14px 6px;
 			display: flex;
 			flex-direction: column;
@@ -977,38 +973,40 @@
 		.bar {
 			width: 4px;
 			border-radius: 3px;
-			background: #333;
+			/* background: #333; */
 			height: 3px;
 			transition: background 0.2s;
 		}
 
 		.chat-input-area {
 			padding: 10px 12px;
-			border-top: 1px solid #1a1a1a;
+			border-top: 1px solid #333;
 			display: flex;
 			gap: 6px;
-			background: #000;
+			/* background: #000; */
 			align-items: center;
 		}
 
 		#chat-input {
 			flex: 1;
 			padding: 10px 15px;
-			border: 1px solid #dee2e6;
-			border-radius: 20px;
+			border: 1.5px solid #ffffff;
+			border-radius: 18px;
 			outline: none;
 			font-size: 14px;
+			background: #000000;
+			color: #fff;
 			transition: border-color 0.2s;
 		}
 
-		#chat-input:focus {
-			border-color: #007bff;
+		#chat-input::placeholder {
+			color: #666;
 		}
 
 		#send-btn {
-			background: #007bff;
+			background: #000000;
 			color: white;
-			border: none;
+			border: 1.5px solid #ffffff;
 			padding: 8px 14px;
 			border-radius: 20px;
 			cursor: pointer;
@@ -1018,48 +1016,47 @@
 			white-space: nowrap;
 		}
 
-		#send-btn:hover {
-			background: #0056b3;
+		#send-btn:focus {
+			outline: none;
 		}
 
 		#mic-btn {
-			background: #1f1f1f;
+			background: #000;
 			color: #aaa;
-			border: none;
-			padding: 8px 10px;
-			border-radius: 20px;
+			border: 2px solid #ffc107;
+			padding: 15px 5px;
+			border-radius: 10px;
 			cursor: pointer;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			transition: background 0.2s;
+			transition: background 0.2s, border-color 0.2s;
 			flex-shrink: 0;
 		}
 
-		#mic-btn:hover {
-			background: #333;
-			color: #fff;
+		#mic-btn:focus {
+			outline: none;
 		}
 
 		#mic-btn.connecting {
-			background: #4f46e5;
-			color: white;
+			background: #ffffff;
+			color: rgb(0, 0, 0);
 		}
 
 		#mic-btn.listening {
-			background: #16a34a;
-			color: white;
+			background: #000000;
+			color: White;
 			animation: mic-pulse 1s ease-in-out infinite;
 		}
 
 		#mic-btn.speaking {
-			background: #d97706;
+			background: #000000;
 			color: white;
 		}
 
 		@keyframes mic-pulse {
 
-			0%,
+			*/ 0%,
 			100% {
 				transform: scale(1);
 				box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
@@ -1119,17 +1116,32 @@
 					.then(data => {
 						let reply = data.response || data.message || data.text || data.answer
 							|| (typeof data === 'string' ? data : JSON.stringify(data));
-						appendMessage('bot', reply);
+						appendMessage('bot', reply, true);
 					})
 					.catch(() => appendMessage('bot', 'Error connecting to server.'));
 			}
 
-			function appendMessage(sender, text) {
+			function appendMessage(sender, text, animate = false) {
 				const d = document.createElement('div');
 				d.classList.add('message-bubble', sender === 'user' ? 'user-message' : 'bot-message');
-				d.textContent = text;
 				messagesDiv.appendChild(d);
 				messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+				if (animate && sender === 'bot') {
+					const words = text.split(' ');
+					let i = 0;
+					function typeWord() {
+						if (i < words.length) {
+							d.textContent += (i === 0 ? '' : ' ') + words[i];
+							messagesDiv.scrollTop = messagesDiv.scrollHeight;
+							i++;
+							setTimeout(typeWord, 60);
+						}
+					}
+					typeWord();
+				} else {
+					d.textContent = text;
+				}
 			}
 
 			sendBtn.addEventListener('click', sendMessage);
